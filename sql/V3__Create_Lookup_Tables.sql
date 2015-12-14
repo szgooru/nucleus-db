@@ -45,8 +45,7 @@ CREATE TYPE assessment_type AS ENUM ('internal', 'external');
 -- 21st Century skills: Content mapping to 21st century skills as defined by P21
 CREATE TYPE metadata_reference_type AS ENUM ('educational_use', 'moments_of_learning', 
  'depth_of_knowledge', 'reading_level', 'audience', 'advertisement_level', 
- 'hazard_level', 'media_feature', 'twentyone_century_skill'
-);
+ 'hazard_level', 'media_feature');
 
 
 -- Generic lookup for metadata_reference_type values
@@ -60,6 +59,32 @@ CREATE TABLE metadata_reference (
  sequence_id smallint NOT NULL,
  PRIMARY KEY(id)
 ); 
+
+
+
+-- Stores the 21st century skill values
+-- Values are bucketed based on keys and then may be attributed to 1 or more models
+-- Model names are Hewlett Deeper Learning Model, Conley Four Keys, P21 Framework 
+--and National Research Center for Life and Work
+-- Key classification could be any of Key Cognitive Skills and Strategies, 
+--Key Content Knowledge and Key Learning Skills and Techniques 
+ 
+CREATE TABLE twenty_one_century_skill (
+ id serial NOT NULL,
+ creator_id varchar(36) NOT NULL,
+ created timestamp NOT NULL, 
+ modified timestamp NOT NULL,
+ key_classification varchar(2000) NOT NULL,
+ value varchar(2000) NOT NULL, 
+ sequence_id smallint NOT NULL,
+ model0 varchar(2000),
+ model1 varchar(2000),
+ model2 varchar(2000),
+ model3 varchar(2000),
+ PRIMARY KEY(id)
+); 
+
+
 
 -- Taxonomy subject information 
 CREATE TABLE taxonomy_subject (
