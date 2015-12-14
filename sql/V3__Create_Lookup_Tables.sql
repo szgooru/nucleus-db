@@ -2,9 +2,11 @@
 -- You can run this command using the newly created nucleus user:
 -- psql -U nucleus -f <path to>/V3__Create_Lookup_Tables.sql
 
+-- Supported resource format 
+CREATE TYPE resource_format AS ENUM ('video', 'webpage', 'interactive', 'image', 'text', 'audio');
 
--- Supported question types
-CREATE TYPE question_type AS ENUM ('multiple_choice', 'multiple_answer', 
+-- Supported question format
+CREATE TYPE question_format AS ENUM ('multiple_choice', 'multiple_answer', 
 'true_false', 'fill_in_the_blank', 'open_ended', 'hot_text_reorder', 
 'hot_text_highlight',  'hot_spot_image', 'hot_spot_text');
 
@@ -20,12 +22,11 @@ CREATE TYPE subject_classification_type AS ENUM ('K-12', 'Higher Education', 'Pr
 -- Supported class visibility  
 CREATE TYPE class_visibility AS ENUM ('open', 'restricted');
 
--- Type of resource 
-CREATE TYPE resource_format AS ENUM ('video', 'webpage', 'interactive', 'image', 'text', 'audio');
-
-
 -- Type of assessment 
 CREATE TYPE assessment_type AS ENUM ('internal', 'external');
+
+-- Type of question 
+CREATE TYPE question_type AS ENUM ('internal', 'external');
 
 
 -- This enum lists out reference types supported in Gooru that the content is 

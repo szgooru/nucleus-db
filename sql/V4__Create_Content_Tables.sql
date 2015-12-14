@@ -46,6 +46,7 @@ CREATE TABLE question (
  original_creator_id varchar(36) NOT NULL, 
  original_question_id varchar(36) NOT NULL, 
  publish_date timestamp,
+ format question_format NOT NULL,
  type question_type NOT NULL,
  explanation varchar(5000),
  hint JSONB NOT NULL,
