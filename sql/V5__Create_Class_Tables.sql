@@ -5,8 +5,8 @@
 -- Information about user created class 
 CREATE TABLE class (
  id varchar(36) NOT NULL,
- created timestamp NOT NULL,
- modified timestamp NOT NULL,
+ created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+ modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  creator_id varchar(36) NOT NULL,
  title varchar(5000) NOT NULL,
  description varchar(5000),
@@ -18,7 +18,7 @@ CREATE TABLE class (
  min_score smallint NOT NULL,
  end_time timestamp,
  course_id varchar(36),
- is_deleted boolean,
+ is_deleted boolean NOT NULL DEFAULT FALSE,
  collaborator JSONB,
  PRIMARY KEY (id),
  UNIQUE (code)
@@ -41,8 +41,8 @@ CREATE INDEX class_course_id_idx ON
 -- Information about members belonging to a class with invited, joined or pending
 --status 
 CREATE TABLE class_member (
- created timestamp NOT NULL,
- modified timestamp NOT NULL,
+ created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+ modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  class_id varchar(36) NOT NULL,
  user_id varchar(36) NOT NULL, 
  status class_member_status NOT NULL, 

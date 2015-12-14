@@ -23,6 +23,7 @@ CREATE TYPE class_visibility AS ENUM ('open', 'restricted');
 -- Type of resource 
 CREATE TYPE resource_format AS ENUM ('video', 'webpage', 'interactive', 'image', 'text', 'audio');
 
+
 -- Type of assessment 
 CREATE TYPE assessment_type AS ENUM ('internal', 'external');
 
@@ -52,8 +53,8 @@ CREATE TYPE metadata_reference_type AS ENUM ('educational_use', 'moments_of_lear
 CREATE TABLE metadata_reference (
  id serial NOT NULL,
  creator_id varchar(36) NOT NULL,
- created timestamp NOT NULL, 
- modified timestamp NOT NULL,
+ created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
+ modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  type metadata_reference_type NOT NULL,
  name varchar(2000) NOT NULL,
  sequence_id smallint NOT NULL,
@@ -72,8 +73,8 @@ CREATE TABLE metadata_reference (
 CREATE TABLE twenty_one_century_skill (
  id serial NOT NULL,
  creator_id varchar(36) NOT NULL,
- created timestamp NOT NULL, 
- modified timestamp NOT NULL,
+ created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
+ modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  key_classification varchar(2000) NOT NULL,
  value varchar(2000) NOT NULL, 
  sequence_id smallint NOT NULL,
@@ -90,8 +91,8 @@ CREATE TABLE twenty_one_century_skill (
 CREATE TABLE taxonomy_subject (
  id serial NOT NULL,
  creator_id varchar(36) NOT NULL,
- created timestamp NOT NULL, 
- modified timestamp NOT NULL, 
+ created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
+ modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  code varchar(2000), 
  name varchar(2000) NOT NULL, 
  description varchar(5000), 
@@ -106,8 +107,8 @@ CREATE TABLE taxonomy_course (
  id serial NOT NULL,
  subject_id serial NOT NULL,
  creator_id varchar(36) NOT NULL,
- created timestamp NOT NULL, 
- modified timestamp NOT NULL, 
+ created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
+ modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  code varchar(2000) NOT NULL, 
  name varchar(2000) NOT NULL, 
  description varchar(5000), 
@@ -124,8 +125,8 @@ CREATE INDEX taxonomy_course_subject_id_idx ON
 CREATE TABLE taxonomy_domain (
  id serial NOT NULL,
  creator_id varchar(36) NOT NULL,
- created timestamp NOT NULL, 
- modified timestamp NOT NULL, 
+ created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
+ modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  name varchar(2000) NOT NULL, 
  description varchar(5000), 
  sequence_id smallint NOT NULL, 
@@ -138,8 +139,8 @@ CREATE TABLE taxonomy_subdomain (
  course_id serial NOT NULL,
  domain_id serial NOT NULL,
  creator_id varchar(36) NOT NULL,
- created timestamp NOT NULL, 
- modified timestamp NOT NULL, 
+ created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
+ modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  code varchar(2000) NOT NULL, 
  name varchar(2000) NOT NULL, 
  description varchar(5000), 
@@ -164,8 +165,8 @@ CREATE INDEX subdomain_code_subdomain_id_idx ON
 CREATE TABLE code (
  id serial NOT NULL,
  creator_id varchar(36) NOT NULL,
- created timestamp NOT NULL, 
- modified timestamp NOT NULL, 
+ created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
+ modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  name varchar(2000) NOT NULL,
  code varchar(2000) NOT NULL,
  display_code varchar(2000) NOT NULL, 
