@@ -28,7 +28,6 @@ CREATE TYPE assessment_type AS ENUM ('internal', 'external');
 -- Type of question 
 CREATE TYPE question_type AS ENUM ('internal', 'external');
 
-
 -- This enum lists out reference types supported in Gooru that the content is 
 -- tagged to
 -- Educational use: Information about whether the content is an article, book, 
@@ -49,7 +48,6 @@ CREATE TYPE metadata_reference_type AS ENUM ('educational_use', 'moments_of_lear
  'depth_of_knowledge', 'reading_level', 'audience', 'advertisement_level', 
  'hazard_level', 'media_feature');
 
-
 -- Generic lookup for metadata_reference_type values
 CREATE TABLE metadata_reference (
  id serial NOT NULL,
@@ -68,7 +66,6 @@ CREATE TABLE metadata_reference (
 --and National Research Center for Life and Work
 -- Key classification could be any of Key Cognitive Skills and Strategies, 
 --Key Content Knowledge and Key Learning Skills and Techniques 
- 
 CREATE TABLE twenty_one_century_skill (
  id serial NOT NULL,
  creator_id varchar(36) NOT NULL,
@@ -95,24 +92,24 @@ CREATE TABLE taxonomy_subject (
  description varchar(5000), 
  sequence_id smallint NOT NULL, 
  classification subject_classification_type NOT NULL,
- gooru_taxonomy_subject_id bigint NOT NULL,
- standards_framework_id integer NOT NULL,
+ taxonomy_default_subject_id bigint NOT NULL,
+ standards_framework_code varchar(2000) NOT NULL,
  standards_framework_name varchar(2000) NOT NULL,  
  PRIMARY KEY(id)
 );
 
--- Index on gooru_subject_id to enhance query performance
-CREATE INDEX taxonomy_subject_gooru_taxonomy_subject_id_idx ON 
- taxonomy_subject (gooru_taxonomy_subject_id);
+-- Index on taxonomy_default_subject_id to enhance query performance
+CREATE INDEX taxonomy_subject_taxonomy_default_subject_id_idx ON 
+ taxonomy_subject (taxonomy_default_subject_id);
 
--- Index on standard_framework_code_id to enhance query performance
-CREATE INDEX taxonomy_subject_standards_framework_id_idx ON 
- taxonomy_subject (standards_framework_id);
+-- Index on standards_framework_code to enhance query performance
+CREATE INDEX taxonomy_subject_standards_framework_code_idx ON 
+ taxonomy_subject (standards_framework_code);
 
 -- Taxonomy course information 
 CREATE TABLE taxonomy_course (
  id bigserial NOT NULL,
- subject_id bigint NOT NULL,
+ taxonomy_subject_id bigint NOT NULL,
  creator_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
@@ -121,22 +118,22 @@ CREATE TABLE taxonomy_course (
  description varchar(5000), 
  grades varchar(2000),
  sequence_id smallint NOT NULL, 
- gooru_taxonomy_course_id bigint NOT NULL,
- standards_framework_id integer NOT NULL,
+ taxonomy_default_course_id bigint NOT NULL,
+ standards_framework_code varchar(2000) NOT NULL,
  PRIMARY KEY(id)
 );
 
 -- Index on subject_id to enhance query performance
-CREATE INDEX taxonomy_course_subject_id_idx ON 
- taxonomy_course (subject_id);
+CREATE INDEX taxonomy_course_taxonomy_subject_id_idx ON 
+ taxonomy_course (taxonomy_subject_id);
 
--- Index on gooru_course_id to enhance query performance
-CREATE INDEX taxonomy_course_gooru_taxonomy_course_id_idx ON 
- taxonomy_course (gooru_taxonomy_course_id);
+-- Index on taxonomy_default_course_id to enhance query performance
+CREATE INDEX taxonomy_course_taxonomy_default_course_id_idx ON 
+ taxonomy_course (taxonomy_default_course_id);
 
--- Index on standard_framework_code_id to enhance query performance
-CREATE INDEX taxonomy_course_standards_framework_id_idx ON 
- taxonomy_course (standards_framework_id);
+-- Index on standards_framework_code to enhance query performance
+CREATE INDEX taxonomy_course_standards_framework_code_idx ON 
+ taxonomy_course (standards_framework_code);
 
 -- Taxonomy domain information 
 CREATE TABLE taxonomy_domain (
@@ -148,18 +145,18 @@ CREATE TABLE taxonomy_domain (
  display_code varchar(2000) NOT NULL,
  description varchar(5000), 
  sequence_id smallint NOT NULL, 
- gooru_taxonomy_domain_id bigint NOT NULL,
- standards_framework_id integer NOT NULL, 
+ taxonomy_default_domain_id bigint NOT NULL,
+ standards_framework_code varchar(2000) NOT NULL, 
  PRIMARY KEY(id)
 );
 
 -- Index on gooru_domain_id to enhance query performance
-CREATE INDEX taxonomy_domain_gooru_taxonomy_domain_id_idx ON 
- taxonomy_domain (gooru_taxonomy_domain_id);
+CREATE INDEX taxonomy_domain_taxonomy_default_domain_id_idx ON 
+ taxonomy_domain (taxonomy_default_domain_id);
 
--- Index on standard_framework_code_id to enhance query performance
-CREATE INDEX taxonomy_domain_standards_framework_id_idx ON 
- taxonomy_domain (standards_framework_id);
+-- Index on standards_framework_code to enhance query performance
+CREATE INDEX taxonomy_domain_standards_framework_code_idx ON 
+ taxonomy_domain (standards_framework_code);
 
 -- Mapping between taxonomy course and domain 
 CREATE TABLE taxonomy_subdomain (
@@ -173,8 +170,8 @@ CREATE TABLE taxonomy_subdomain (
  display_code varchar(2000) NOT NULL, 
  description varchar(5000), 
  sequence_id smallint NOT NULL, 
- gooru_taxonomy_subdomain_id bigint NOT NULL,
- standards_framework_id integer NOT NULL,
+ taxonomy_default_subdomain_id bigint NOT NULL,
+ standards_framework_code varchar(2000) NOT NULL, 
  PRIMARY KEY(id)
 );
 
@@ -182,13 +179,13 @@ CREATE TABLE taxonomy_subdomain (
 CREATE INDEX taxonomy_subdomain_course_id_domain_id_idx ON 
  taxonomy_subdomain (taxonomy_course_id, taxonomy_domain_id);
 
--- Index on course_id, domain_id to enhance query performance
+-- Index on taxonomy_default_subdomain_id to enhance query performance
 CREATE INDEX taxonomy_subdomain_subdomain_id_idx ON 
- taxonomy_subdomain (gooru_taxonomy_subdomain_id);
+ taxonomy_subdomain (taxonomy_default_subdomain_id);
 
--- Index on standard_framework_code_id to enhance query performance
-CREATE INDEX taxonomy_subdomain_standards_framework_id_idx ON 
- taxonomy_subdomain (standards_framework_id);
+-- Index on standards_framework_code to enhance query performance
+CREATE INDEX taxonomy_subdomain_standards_framework_code_idx ON 
+ taxonomy_subdomain (standards_framework_code);
 
 -- Generic table to store standards & learning target information
 CREATE TABLE taxonomy_code (
@@ -203,7 +200,7 @@ CREATE TABLE taxonomy_code (
  parent_id bigint, 
  root_node_id bigint,
  sequence_id smallint,
- standards_framework_id integer NOT NULL, 
+ standards_framework_code varchar(2000) NOT NULL, 
  PRIMARY KEY(id)
 );
 
@@ -219,6 +216,10 @@ CREATE INDEX taxonomy_code_root_node_id_idx ON
 CREATE INDEX taxonomy_code_code_idx ON 
  taxonomy_code (code);
 
+-- Index on code to enhance query performance
+CREATE INDEX taxonomy_standards_framework_code_idx ON 
+ taxonomy_code (standards_framework_code);
+
 -- Subdomain and standard mapping
 CREATE TABLE taxonomy_subdomain_code (
  taxonomy_subdomain_id bigint NOT NULL,
@@ -229,25 +230,25 @@ CREATE TABLE taxonomy_subdomain_code (
 -- GUT Standard mapping across frameworks
 CREATE TABLE taxonomy_standard_map (
  id bigserial NOT NULL,
- gooru_taxonomy_subject_code varchar(2000) NOT NULL, -- should we use id instead?  
- gooru_taxonomy_standard_code varchar(2000) NOT NULL,
+ taxonomy_default_subject_code varchar(2000) NOT NULL, -- should we use id instead?  
+ taxonomy_default_standard_code varchar(2000) NOT NULL,
  ccss_standard_display_code varchar(2000) NOT NULL,
  cass_standard_display_code varchar(2000) NOT NULL,
  ngss_standard_display_code varchar(2000) NOT NULL,
  teks_standard_display_code varchar(2000) NOT NULL,
- c3_standard varchar(2000) NOT NULL,
+ c3_standard_display_code varchar(2000) NOT NULL,
  PRIMARY KEY(id)
 );
 
 -- Index on Gooru standard to enhance query performance
-CREATE INDEX taxonomy_standard_map_standard_subject_idx ON 
- taxonomy_standard_map (gooru_taxonomy_standard_code, gooru_taxonomy_subject_code);
+CREATE INDEX taxonomy_standard_map_standard_subject_code_idx ON 
+ taxonomy_standard_map (taxonomy_default_standard_code, taxonomy_default_subject_code);
 
 -- GUT Learning target mapping across frameworks
 CREATE TABLE taxonomy_learning_target_map (
  id bigserial NOT NULL,
- gooru_taxonomy_subject_code varchar(2000) NOT NULL, 
- gooru_taxonomy_learning_target varchar(2000) NOT NULL,
+ taxonomy_default_subject_code varchar(2000) NOT NULL, 
+ taxonomy_default_learning_target_code varchar(2000) NOT NULL,
  ccss_learning_target_display_code varchar(2000) NOT NULL,
  cass_learning_target_display_code varchar(2000) NOT NULL,
  ngss_learning_target_display_code varchar(2000) NOT NULL,
@@ -257,10 +258,8 @@ CREATE TABLE taxonomy_learning_target_map (
 );
 
 -- Index on Gooru standard to enhance query performance
-CREATE INDEX taxonomy_learning_target_map_subject_learning_target_idx ON 
- taxonomy_learning_target_map (gooru_taxonomy_learning_target, gooru_taxonomy_subject_code);
-
-
+CREATE INDEX taxonomy_learning_target_map_subject_learning_target_code_idx ON 
+ taxonomy_learning_target_map (taxonomy_default_learning_target_code, taxonomy_default_subject_code);
 
 -- Generic table to store standards & learning target information 
 -- NOT mapped to Gooru Taxonomy
@@ -276,7 +275,7 @@ CREATE TABLE code (
  parent_id bigint, 
  root_node_id bigint,
  sequence_id smallint,
- standards_framework_id integer NOT NULL, 
+ standards_framework_code varchar(2000) NOT NULL, 
  PRIMARY KEY(id)
 );
 
@@ -292,4 +291,7 @@ CREATE INDEX code_root_node_id_idx ON
 CREATE INDEX code_code_idx ON 
  code (code);
 
+-- Index on code to enhance query performance
+CREATE INDEX code_standards_framework_code_idx ON 
+ code (standards_framework_code);
 
