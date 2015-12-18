@@ -40,6 +40,7 @@ CREATE INDEX resource_modified_idx ON
 -- Information about question ingested offline / created by the user
 CREATE TABLE question (
  id varchar(36) NOT NULL,
+ short_title varchar(5000) NOT NULL,
  title varchar(20000) NOT NULL, 
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
