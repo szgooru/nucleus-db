@@ -19,7 +19,7 @@ CREATE TABLE resource (
  is_copyright_owner boolean NOT NULL DEFAULT FALSE,
  copyright_owner varchar(2000),  
  metadata JSONB,
- code JSONB,
+ taxonomy JSONB,
  is_frame_breaker boolean DEFAULT FALSE,
  is_broken boolean DEFAULT FALSE,
  visible_on_profile boolean NOT NULL DEFAULT FALSE,  
@@ -58,7 +58,7 @@ CREATE TABLE question (
  detail JSONB,
  answer JSONB NOT NULL,
  metadata JSONB,
- code JSONB,
+ taxonomy JSONB,
  visible_on_profile boolean NOT NULL DEFAULT FALSE,  
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
@@ -95,7 +95,7 @@ CREATE TABLE collection (
  audience JSONB, 
  collaborator JSONB,
  metadata JSONB, 
- code JSONB, 
+ taxonomy JSONB, 
  visible_on_profile boolean NOT NULL DEFAULT FALSE,  
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
@@ -134,7 +134,7 @@ CREATE TABLE collection_item (
  creator_id varchar(36) NOT NULL,
  narration varchar(5000), 
  metadata JSONB,
- code JSONB, 
+ taxonomy JSONB, 
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
  );
@@ -178,7 +178,7 @@ CREATE TABLE assessment (
  audience JSONB, 
  collaborator JSONB, 
  metadata JSONB,
- code JSONB, 
+ taxonomy JSONB, 
  login_required boolean, 
  settings JSONB,
  visible_on_profile boolean NOT NULL DEFAULT FALSE,  
@@ -247,7 +247,7 @@ CREATE TABLE course (
  sharing sharing_type NOT NULL,
  audience JSONB,
  metadata JSONB,
- code JSONB,
+ taxonomy JSONB,
  collaborator JSONB,
  class_list JSONB,
  visible_on_profile boolean NOT NULL DEFAULT FALSE,  
@@ -290,7 +290,7 @@ CREATE TABLE course_unit(
  big_ideas varchar(20000) NOT NULL,
  essential_questions varchar(20000) NOT NULL,
  metadata JSONB,
- code JSONB,
+ taxonomy JSONB,
  sequence_id smallint NOT NULL,
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (course_id, unit_id)
@@ -313,7 +313,7 @@ CREATE TABLE course_unit_lesson(
  original_creator_id varchar(36) NOT NULL, 
  original_lesson_id varchar(36) NOT NULL,
  metadata JSONB,
- code JSONB,
+ taxonomy JSONB,
  sequence_id smallint NOT NULL,
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (course_id, unit_id, lesson_id)
