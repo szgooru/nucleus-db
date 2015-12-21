@@ -78,10 +78,10 @@ CREATE TABLE twenty_one_century_skill (
  key_classification varchar(2000) NOT NULL,
  label varchar(2000) NOT NULL, 
  sequence_id smallint NOT NULL,
- model0 varchar(2000),
- model1 varchar(2000),
- model2 varchar(2000),
- model3 varchar(2000),
+ hewlett_deep_learning_model varchar(2000),
+ conley_four_keys_model varchar(2000),
+ p21_framework_model varchar(2000),
+ national_research_center_model varchar(2000),
  PRIMARY KEY(id)
 );
 
@@ -255,7 +255,7 @@ CREATE TABLE default_code (
  depth smallint, 
  parent_default_code_id bigint, 
  root_default_code_id bigint,
- sequence_id smallint,
+ sequence_id smallint NOT NULL,
  type code_type NOT NULL,
  has_taxonomy_representation boolean NOT NULL DEFAULT FALSE,
  UNIQUE (code),
@@ -283,7 +283,7 @@ CREATE TABLE taxonomy_code (
  depth smallint, 
  parent_taxonomy_code_id bigint, 
  root_taxonomy_code_id bigint,
- sequence_id smallint,
+ sequence_id smallint NOT NULL,
  default_code_id bigint NOT NULL REFERENCES default_code (id), 
  standard_framework_code varchar(36) NOT NULL REFERENCES standard_framework (code), 
  type code_type NOT NULL,
