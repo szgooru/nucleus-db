@@ -362,7 +362,7 @@ CREATE TABLE code (
  depth smallint, 
  parent_id bigint, 
  root_node_id bigint,
- sequence_id smallint,
+ sequence_id smallint NOT NULL,
  standard_framework_code varchar(36) NOT NULL REFERENCES standard_framework (code), 
  type code_type NOT NULL,
  is_selectable boolean NOT NULL DEFAULT FALSE,
