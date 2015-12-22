@@ -29,7 +29,7 @@ CREATE TYPE assessment_type AS ENUM ('internal', 'external');
 CREATE TYPE question_type AS ENUM ('internal', 'external');
 
 -- Supported code types 
-CREATE TYPE code_type AS ENUM ('standard_level_0', 'standard_level_1', 'standard_level_2', 'learning_target');
+CREATE TYPE code_type AS ENUM ('standard_level_0', 'standard_level_1', 'standard_level_2', 'learning_target_group', 'learning_target');
 
 
 -- This enum lists out reference types supported in Gooru that the content is 
