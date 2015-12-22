@@ -31,6 +31,9 @@ CREATE TYPE question_type AS ENUM ('internal', 'external');
 -- Supported code types 
 CREATE TYPE code_type AS ENUM ('standard_level_0', 'standard_level_1', 'standard_level_2', 'learning_target_group', 'learning_target');
 
+-- Grading type for assessments
+CREATE TYPE grading_type AS ENUM ('system', 'teacher');
+
 
 -- This enum lists out reference types supported in Gooru that the content is 
 -- tagged to
@@ -104,7 +107,7 @@ CREATE TABLE default_subject (
  sequence_id smallint NOT NULL, 
  classification subject_classification_type NOT NULL,
  has_taxonomy_representation boolean NOT NULL DEFAULT FALSE,
- standard_framework_code varchar(36) NOT NULL REFERENCES standard_framework (code),
+ default_standard_framework_code varchar(36) REFERENCES standard_framework (code),
  is_default_preference boolean NOT NULL DEFAULT FALSE,
  UNIQUE (code),
  PRIMARY KEY(id)
@@ -254,7 +257,6 @@ CREATE TABLE default_code (
  code varchar(2000) NOT NULL,
  display_code varchar(2000) NOT NULL, 
  description varchar(5000) NOT NULL,
- depth smallint, 
  parent_default_code_id bigint, 
  root_default_code_id bigint,
  sequence_id smallint NOT NULL,
@@ -279,7 +281,6 @@ CREATE TABLE taxonomy_code (
  code varchar(2000) NOT NULL,
  display_code varchar(2000) NOT NULL, 
  description varchar(5000) NOT NULL,
- depth smallint, 
  parent_taxonomy_code_id bigint, 
  root_taxonomy_code_id bigint,
  sequence_id smallint NOT NULL,
@@ -319,15 +320,14 @@ CREATE TABLE taxonomy_subdomain_code (
 
 -- GUT Standard mapping across frameworks
 CREATE TABLE taxonomy_standard_map (
- id bigserial NOT NULL,
- default_subject_code varchar(2000) NOT NULL REFERENCES default_subject (code),   
  default_standard_code varchar(2000) NOT NULL REFERENCES default_code (code),
+ default_subject_code varchar(2000) NOT NULL REFERENCES default_subject (code),   
  ccss_standard_display_code varchar(2000),
  cass_standard_display_code varchar(2000),
  ngss_standard_display_code varchar(2000),
  teks_standard_display_code varchar(2000),
  c3_standard_display_code varchar(2000),
- PRIMARY KEY(id)
+ PRIMARY KEY(default_standard_code)
 );
 
 CREATE INDEX taxonomy_standard_map_standard_subject_code_idx ON 
@@ -335,15 +335,14 @@ CREATE INDEX taxonomy_standard_map_standard_subject_code_idx ON
 
 -- GUT Learning target mapping across frameworks
 CREATE TABLE taxonomy_learning_target_map (
- id bigserial NOT NULL,
- default_subject_code varchar(2000) NOT NULL REFERENCES default_subject (code), 
  default_learning_target_code varchar(2000) NOT NULL REFERENCES default_code (code),
+ default_subject_code varchar(2000) NOT NULL REFERENCES default_subject (code), 
  ccss_learning_target_display_code varchar(2000),
  cass_learning_target_display_code varchar(2000),
  ngss_learning_target_display_code varchar(2000),
  teks_learning_target_display_code varchar(2000),
  c3_learning_target_display_code varchar(2000),
- PRIMARY KEY(id)
+ PRIMARY KEY(default_learning_target_code)
 );
 
 CREATE INDEX taxonomy_learning_target_map_subject_learning_target_code_idx ON 
@@ -359,7 +358,6 @@ CREATE TABLE code (
  code varchar(2000) NOT NULL,
  display_code varchar(2000) NOT NULL, 
  description varchar(5000) NOT NULL,
- depth smallint, 
  parent_code_id bigint, 
  root_code_id bigint,
  sequence_id smallint NOT NULL,

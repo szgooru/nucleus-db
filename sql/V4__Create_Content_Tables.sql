@@ -14,7 +14,7 @@ CREATE TABLE resource (
  description varchar(20000), 
  format resource_format NOT NULL, 
  thumbnail varchar(2000),
- url varchar(2000) NOT NULL, 
+ url varchar(2000), 
  sharing sharing_type NOT NULL,
  is_copyright_owner boolean NOT NULL DEFAULT FALSE,
  copyright_owner JSONB,  
@@ -38,6 +38,9 @@ CREATE INDEX resource_creator_id_idx ON
 CREATE INDEX resource_modified_idx ON 
  resource (modified);
 
+CREATE INDEX resource_title_idx ON 
+ resource (title);
+
 
 -- Information about question ingested offline / created by the user
 CREATE TABLE question (
@@ -57,8 +60,10 @@ CREATE TABLE question (
  hint JSONB NOT NULL,
  detail JSONB,
  answer JSONB NOT NULL,
+ url varchar(2000),
  metadata JSONB,
  taxonomy JSONB,
+ depth_of_knowledge JSONB,
  visible_on_profile boolean NOT NULL DEFAULT FALSE,  
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
@@ -77,6 +82,9 @@ CREATE INDEX question_creator_id_idx ON
 --provides list of top N questions modified   
 CREATE INDEX question_modified_idx ON 
  question (modified);
+
+CREATE INDEX question_short_title_idx ON 
+ question (short_title);
 
 -- Container for resources and/or questions with metadata information
 CREATE TABLE collection (
@@ -101,9 +109,6 @@ CREATE TABLE collection (
  PRIMARY KEY (id)
 ); 
 
--- Index on owner to improve query performance of queries that lists of collections 
---for a given user.  
-
 CREATE INDEX collection_original_creator_id_idx ON 
  collection (original_creator_id);
 
@@ -120,6 +125,9 @@ CREATE INDEX collection_modified_idx ON
 --her workspace.
 CREATE INDEX collection_collaborator_gin ON collection 
  USING gin (collaborator jsonb_path_ops);
+
+CREATE INDEX collection_title_idx ON 
+ collection (title);
 
 -- Container for a sequenced set of resources or questions belonging to a collection 
 CREATE TABLE collection_item (
@@ -181,6 +189,7 @@ CREATE TABLE assessment (
  taxonomy JSONB, 
  login_required boolean, 
  settings JSONB,
+ graded_by grading_type NOT NULL,
  visible_on_profile boolean NOT NULL DEFAULT FALSE,  
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
@@ -204,6 +213,9 @@ CREATE INDEX assessment_modified_idx ON
 --her workspace.
 CREATE INDEX assessment_collaborator_gin ON assessment 
  USING gin (collaborator jsonb_path_ops);
+
+CREATE INDEX assessment_title_idx ON 
+ assessment (title);
 
 -- Container for a sequenced set of questions belonging to an assessment 
 CREATE TABLE assessment_item (
@@ -275,6 +287,9 @@ CREATE INDEX course_class_list_gin ON course
 -- Create an inverted index on collaborators on this course. 
 CREATE INDEX course_collaborator_gin ON course 
  USING gin (collaborator jsonb_path_ops);
+
+CREATE INDEX course_title_idx ON 
+ course (title);
 
 -- Container for user created course and unit information with metadata
 CREATE TABLE course_unit(
