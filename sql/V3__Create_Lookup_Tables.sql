@@ -104,6 +104,8 @@ CREATE TABLE default_subject (
  sequence_id smallint NOT NULL, 
  classification subject_classification_type NOT NULL,
  has_taxonomy_representation boolean NOT NULL DEFAULT FALSE,
+ standard_framework_code varchar(36) NOT NULL REFERENCES standard_framework (code),
+ is_default_preference boolean NOT NULL DEFAULT FALSE,
  UNIQUE (code),
  PRIMARY KEY(id)
 );
@@ -317,16 +319,17 @@ CREATE TABLE taxonomy_subdomain_code (
  PRIMARY KEY(taxonomy_subdomain_id, taxonomy_code_id)
 );
 
+
 -- GUT Standard mapping across frameworks
 CREATE TABLE taxonomy_standard_map (
  id bigserial NOT NULL,
  default_subject_code varchar(2000) NOT NULL REFERENCES default_subject (code),   
  default_standard_code varchar(2000) NOT NULL REFERENCES default_code (code),
- ccss_standard_display_code varchar(2000) NOT NULL REFERENCES default_code (code),
- cass_standard_display_code varchar(2000) NOT NULL REFERENCES default_code (code),
- ngss_standard_display_code varchar(2000) NOT NULL REFERENCES default_code (code),
- teks_standard_display_code varchar(2000) NOT NULL REFERENCES default_code (code),
- c3_standard_display_code varchar(2000) NOT NULL REFERENCES default_code (code),
+ ccss_standard_display_code varchar(2000),
+ cass_standard_display_code varchar(2000),
+ ngss_standard_display_code varchar(2000),
+ teks_standard_display_code varchar(2000),
+ c3_standard_display_code varchar(2000),
  PRIMARY KEY(id)
 );
 
@@ -338,11 +341,11 @@ CREATE TABLE taxonomy_learning_target_map (
  id bigserial NOT NULL,
  default_subject_code varchar(2000) NOT NULL REFERENCES default_subject (code), 
  default_learning_target_code varchar(2000) NOT NULL REFERENCES default_code (code),
- ccss_learning_target_display_code varchar(2000) NOT NULL REFERENCES default_code (code),
- cass_learning_target_display_code varchar(2000) NOT NULL REFERENCES default_code (code),
- ngss_learning_target_display_code varchar(2000) NOT NULL REFERENCES default_code (code),
- teks_learning_target_display_code varchar(2000) NOT NULL REFERENCES default_code (code),
- c3_learning_target_display_code varchar(2000) NOT NULL REFERENCES default_code (code),
+ ccss_learning_target_display_code varchar(2000),
+ cass_learning_target_display_code varchar(2000),
+ ngss_learning_target_display_code varchar(2000),
+ teks_learning_target_display_code varchar(2000),
+ c3_learning_target_display_code varchar(2000),
  PRIMARY KEY(id)
 );
 
@@ -360,8 +363,8 @@ CREATE TABLE code (
  display_code varchar(2000) NOT NULL, 
  description varchar(5000) NOT NULL,
  depth smallint, 
- parent_id bigint, 
- root_node_id bigint,
+ parent_code_id bigint, 
+ root_code_id bigint,
  sequence_id smallint NOT NULL,
  standard_framework_code varchar(36) NOT NULL REFERENCES standard_framework (code), 
  type code_type NOT NULL,
@@ -369,11 +372,11 @@ CREATE TABLE code (
  PRIMARY KEY(id)
 );
 
-CREATE INDEX code_parent_id_idx ON 
- code (parent_id);
+CREATE INDEX code_parent_code_id_idx ON 
+ code (parent_code_id);
 
-CREATE INDEX code_root_node_id_idx ON 
- code (root_node_id);
+CREATE INDEX code_root_code_id_idx ON 
+ code (root_code_id);
 
 CREATE INDEX code_code_idx ON 
  code (code);
