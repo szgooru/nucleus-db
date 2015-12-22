@@ -20,7 +20,7 @@ CREATE TYPE class_member_status AS ENUM ('invited', 'pending', 'joined');
 CREATE TYPE subject_classification_type AS ENUM ('K-12', 'Higher Education', 'Professional Learning');
 
 -- Supported class visibility  
-CREATE TYPE class_visibility AS ENUM ('open', 'restricted');
+CREATE TYPE class_sharing AS ENUM ('open', 'restricted');
 
 -- Type of assessment 
 CREATE TYPE assessment_type AS ENUM ('internal', 'external');
@@ -269,9 +269,6 @@ CREATE INDEX default_code_parent_default_code_id_idx ON
 
 CREATE INDEX default_code_root_default_code_id_idx ON 
  default_code (root_default_code_id);
-
-CREATE INDEX default_code_code_idx ON 
- default_code (code);
 
 -- Generic table to store standards & learning target information
 CREATE TABLE taxonomy_code (
