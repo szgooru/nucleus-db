@@ -20,6 +20,7 @@ CREATE TABLE class (
  course_id varchar(36),
  is_deleted boolean NOT NULL DEFAULT FALSE,
  collaborator JSONB,
+ is_archived boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id),
  UNIQUE (code)
 );

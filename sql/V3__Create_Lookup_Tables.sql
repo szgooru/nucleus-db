@@ -10,9 +10,6 @@ CREATE TYPE question_format AS ENUM ('multiple_choice', 'multiple_answer',
 'true_false', 'fill_in_the_blank', 'open_ended', 'hot_text_reorder', 
 'hot_text_highlight',  'hot_spot_image', 'hot_spot_text');
 
--- Supported sharing types 
-CREATE TYPE sharing_type AS ENUM ('private', 'shared', 'public');
-
 -- Supported class member status
 CREATE TYPE class_member_status AS ENUM ('invited', 'pending', 'joined');
 
