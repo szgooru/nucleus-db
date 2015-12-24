@@ -60,6 +60,7 @@ CREATE TABLE question (
  detail JSONB,
  answer JSONB NOT NULL,
  url varchar(2000),
+ narration varchar(5000),
  metadata JSONB,
  taxonomy JSONB,
  depth_of_knowledge JSONB,
@@ -224,7 +225,6 @@ CREATE TABLE assessment_item (
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  accessed timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
- narration varchar(5000),
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
 );

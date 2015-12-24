@@ -14,7 +14,7 @@ CREATE TYPE question_format AS ENUM ('multiple_choice', 'multiple_answer',
 CREATE TYPE class_member_status AS ENUM ('invited', 'pending', 'joined');
 
 -- Supported classification type 
-CREATE TYPE subject_classification_type AS ENUM ('K-12', 'Higher Education', 'Professional Learning');
+CREATE TYPE subject_classification_type AS ENUM ('k12', 'higher_education', 'professional_learning');
 
 -- Supported class visibility  
 CREATE TYPE class_sharing AS ENUM ('open', 'restricted');
