@@ -19,6 +19,7 @@ CREATE TABLE resource (
  copyright_owner JSONB,  
  metadata JSONB,
  taxonomy JSONB,
+ depth_of_knowledge JSONB,
  is_frame_breaker boolean DEFAULT FALSE,
  is_broken boolean DEFAULT FALSE,
  visible_on_profile boolean NOT NULL DEFAULT FALSE,  
@@ -187,7 +188,7 @@ CREATE TABLE assessment (
  taxonomy JSONB, 
  login_required boolean, 
  settings JSONB,
- graded_by grading_type NOT NULL,
+ graded_by grading_type,
  visible_on_profile boolean NOT NULL DEFAULT FALSE,  
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)

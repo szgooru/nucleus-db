@@ -285,6 +285,7 @@ CREATE TABLE taxonomy_code (
  standard_framework_code varchar(36) NOT NULL REFERENCES standard_framework (code), 
  type code_type NOT NULL,
  is_selectable boolean NOT NULL DEFAULT FALSE, 
+ UNIQUE (code),
  PRIMARY KEY(id)
 );
 
@@ -293,9 +294,6 @@ CREATE INDEX taxonomy_code_parent_taxonomy_code_id_idx ON
 
 CREATE INDEX taxonomy_code_root_taxonomy_code_id_idx ON 
  taxonomy_code (root_taxonomy_code_id);
-
-CREATE INDEX taxonomy_code_code_idx ON 
- taxonomy_code (code);
 
 CREATE INDEX taxonomy_standard_framework_code_idx ON 
  taxonomy_code (standard_framework_code);
