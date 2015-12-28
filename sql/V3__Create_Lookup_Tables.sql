@@ -2,28 +2,28 @@
 -- You can run this command using the newly created nucleus user:
 -- psql -U nucleus -f <path to>/V3__Create_Lookup_Tables.sql
 
--- Supported resource format 
-CREATE TYPE resource_format AS ENUM ('video', 'webpage', 'interactive', 'image', 'text', 'audio');
+-- Content format types
+CREATE TYPE content_format AS ENUM ('resource', 'question');
 
--- Supported question format
-CREATE TYPE question_format AS ENUM ('multiple_choice', 'multiple_answer', 
-'true_false', 'fill_in_the_blank', 'open_ended', 'hot_text_reorder', 
-'hot_text_highlight',  'hot_spot_image', 'hot_spot_text');
+-- Content format subtypes 
+CREATE TYPE content_subformat AS ENUM ('video', 'webpage', 'interactive', 'image', 
+ 'text', 'audio', 'multiple_choice', 'multiple_answer', 
+ 'true_false', 'fill_in_the_blank', 'open_ended', 'hot_text_reorder', 
+ 'hot_text_highlight',  'hot_spot_image', 'hot_spot_text');
 
 -- Supported class member status
 CREATE TYPE class_member_status AS ENUM ('invited', 'pending', 'joined');
 
 -- Supported classification type 
-CREATE TYPE subject_classification_type AS ENUM ('k12', 'higher_education', 'professional_learning');
+CREATE TYPE subject_classification AS ENUM ('k_12', 'higher_education', 'professional_learning');
 
 -- Supported class visibility  
 CREATE TYPE class_sharing AS ENUM ('open', 'restricted');
 
--- Type of assessment 
-CREATE TYPE assessment_type AS ENUM ('internal', 'external');
+CREATE TYPE assessment_location AS ENUM ('internal', 'external');
 
 -- Type of question 
-CREATE TYPE question_type AS ENUM ('internal', 'external');
+CREATE TYPE question_location AS ENUM ('internal', 'external');
 
 -- Supported code types 
 CREATE TYPE code_type AS ENUM ('standard_level_0', 'standard_level_1', 'standard_level_2', 'learning_target_group', 'learning_target');
@@ -102,7 +102,7 @@ CREATE TABLE default_subject (
  display_code varchar(2000) NOT NULL, 
  description varchar(5000), 
  sequence_id smallint NOT NULL, 
- classification subject_classification_type NOT NULL,
+ classification subject_classification NOT NULL,
  has_taxonomy_representation boolean NOT NULL DEFAULT FALSE,
  default_standard_framework_code varchar(36) REFERENCES standard_framework (code),
  is_default_preference boolean NOT NULL DEFAULT FALSE,
@@ -120,7 +120,7 @@ CREATE TABLE taxonomy_subject (
  display_code varchar(2000) NOT NULL, 
  description varchar(5000), 
  sequence_id smallint NOT NULL, 
- classification subject_classification_type NOT NULL,
+ classification subject_classification NOT NULL,
  default_subject_id bigint NOT NULL REFERENCES default_subject (id),
  standard_framework_code varchar(36) NOT NULL REFERENCES standard_framework (code),
  UNIQUE (code, standard_framework_code),

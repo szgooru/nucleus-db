@@ -2,92 +2,66 @@
 -- You can run this command using the newly created nucleus user:
 -- psql -U nucleus -f <path to>/V4__Create_Content_Tables.sql
 
--- Information about resource ingested offline / created by the user
-CREATE TABLE resource (
- id varchar(36) NOT NULL, 
- title varchar(5000) NOT NULL,
+
+-- Information about content ingested offline / created by the user
+CREATE TABLE content (
+ id varchar(36) NOT NULL,
+ title varchar(20000) NOT NULL,
+ url varchar(2000),
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  accessed timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),  
  creator_id varchar(36) NOT NULL,
+ original_creator_id varchar(36) NOT NULL,
+ original_content_id varchar(36),
  publish_date timestamp,
+ short_title varchar(5000),
+ narration varchar(5000),
  description varchar(20000), 
- format resource_format NOT NULL, 
- thumbnail varchar(2000),
- url varchar(2000), 
- is_copyright_owner boolean NOT NULL DEFAULT FALSE,
- copyright_owner JSONB,  
+ format content_format NOT NULL,
+ subformat content_subformat NOT NULL,
+ question_location question_location,
+ answer JSONB,
  metadata JSONB,
  taxonomy JSONB,
  depth_of_knowledge JSONB,
+ hint_explanation_detail varchar(20000),
+ thumbnail varchar(2000),
+ course_id varchar(36),
+ unit_id varchar(36),
+ lesson_id varchar(36),
+ collection_id varchar(36),
+ sequence_id smallint,
+ is_copyright_owner boolean,
+ copyright_owner JSONB,  
+ visible_on_profile boolean NOT NULL DEFAULT FALSE,
  is_frame_breaker boolean DEFAULT FALSE,
  is_broken boolean DEFAULT FALSE,
- visible_on_profile boolean NOT NULL DEFAULT FALSE,  
- is_deleted boolean NOT NULL DEFAULT FALSE,
- PRIMARY KEY (id),
- UNIQUE (url)
-);
-
--- Index on owner to improve query performance of queries that provides list of 
---resources for a given user
-CREATE INDEX resource_creator_id_idx ON 
- resource (creator_id);
-
--- Index on last modified to improve query performance of queries that 
---provides list of top N resources modified    
-CREATE INDEX resource_modified_idx ON 
- resource (modified);
-
-CREATE INDEX resource_title_idx ON 
- resource (title);
-
-
--- Information about question ingested offline / created by the user
-CREATE TABLE question (
- id varchar(36) NOT NULL,
- short_title varchar(5000) NOT NULL,
- title varchar(20000) NOT NULL, 
- created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
- modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
- accessed timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
- creator_id varchar(36) NOT NULL,
- original_creator_id varchar(36) NOT NULL, 
- original_question_id varchar(36), 
- publish_date timestamp,
- format question_format NOT NULL,
- type question_type NOT NULL,
- explanation varchar(5000),
- hint JSONB NOT NULL,
- detail JSONB,
- answer JSONB NOT NULL,
- url varchar(2000),
- narration varchar(5000),
- metadata JSONB,
- taxonomy JSONB,
- depth_of_knowledge JSONB,
- visible_on_profile boolean NOT NULL DEFAULT FALSE,  
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
 );
 
--- Index on owner to improve query performance of queries that provides lists of 
---resources for a given user.  
+CREATE INDEX content_creator_id_idx ON 
+ content (creator_id);
 
-CREATE INDEX question_original_creator_id_idx ON 
- question (original_creator_id);
+CREATE INDEX content_format_idx ON 
+ content (format);
+ 
+-- Index for filtering requirements on profile
+CREATE INDEX content_title_idx ON 
+ content (title);
 
-CREATE INDEX question_creator_id_idx ON 
- question (creator_id);
+-- Index for filtering requirements on profile
+CREATE INDEX content_taxonomy_gin ON content
+ USING gin (taxonomy jsonb_path_ops);
 
--- Index on last modified to improve query performance of queries that 
---provides list of top N questions modified   
-CREATE INDEX question_modified_idx ON 
- question (modified);
+CREATE INDEX content_collection_id_idx ON 
+ content (collection_id); 
+ 
+CREATE INDEX content_course_id_unit_id_lesson_id_collection_id_idx ON 
+ content (course_id, unit_id, lesson_id, collection_id);
 
-CREATE INDEX question_short_title_idx ON 
- question (short_title);
-
--- Container for resources and/or questions with metadata information
+-- Container for resources and/or questions or just questions with metadata information
 CREATE TABLE collection (
  id varchar(36) NOT NULL, 
  title varchar(5000) NOT NULL, 
@@ -115,11 +89,6 @@ CREATE INDEX collection_original_creator_id_idx ON
 CREATE INDEX collection_creator_id_idx ON 
  collection (creator_id);
 
--- Index on last modified to improve query performance of queries that 
---provides list of top N collections modified   
-CREATE INDEX collection_modified_idx ON 
- collection (modified);
-
 -- Create inverted index on collaborators JSONB doc, so we can search for a given user if 
 --she is collaborating on a particular collection and it needs to be shown in 
 --her workspace.
@@ -129,43 +98,43 @@ CREATE INDEX collection_collaborator_gin ON collection
 CREATE INDEX collection_title_idx ON 
  collection (title);
 
--- Container for a sequenced set of resources or questions belonging to a collection 
-CREATE TABLE collection_item (
- id varchar(36) NOT NULL, 
- collection_id varchar(36) NOT NULL, 
- resource_id varchar(36), 
- question_id varchar(36),
- sequence_id smallint NOT NULL, 
- created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
- modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
- accessed timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
- creator_id varchar(36) NOT NULL,
- narration varchar(5000), 
- metadata JSONB,
- taxonomy JSONB, 
- is_deleted boolean NOT NULL DEFAULT FALSE,
- PRIMARY KEY (id)
- );
+---- Container for a sequenced set of resources or questions belonging to a collection 
+--CREATE TABLE collection_item (
+-- id varchar(36) NOT NULL, 
+-- collection_id varchar(36) NOT NULL, 
+-- resource_id varchar(36), 
+-- question_id varchar(36),
+-- sequence_id smallint NOT NULL, 
+-- created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
+-- modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
+-- accessed timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
+-- creator_id varchar(36) NOT NULL,
+-- narration varchar(5000), 
+-- metadata JSONB,
+-- taxonomy JSONB, 
+-- is_deleted boolean NOT NULL DEFAULT FALSE,
+-- PRIMARY KEY (id)
+-- );
 
--- Index on collection id as we will be querying this table based on collection_id
-CREATE INDEX collection_item_collection_id_idx ON 
- collection_item (collection_id);
+---- Index on collection id as we will be querying this table based on collection_id
+--CREATE INDEX collection_item_collection_id_idx ON 
+-- collection_item (collection_id);
 
--- Index on resource id 
-CREATE INDEX collection_item_resource_id_idx ON 
- collection_item (resource_id);
+---- Index on resource id 
+--CREATE INDEX collection_item_resource_id_idx ON 
+-- collection_item (resource_id);
 
--- Index on collection id and resource id combination for improving peformance of AND queries
-CREATE INDEX collection_item_collection_id_resource_id_idx ON 
- collection_item (collection_id, resource_id);
+---- Index on collection id and resource id combination for improving peformance of AND queries
+--CREATE INDEX collection_item_collection_id_resource_id_idx ON 
+-- collection_item (collection_id, resource_id);
 
--- Index on question id 
-CREATE INDEX collection_item_question_id_idx ON 
- collection_item (question_id);
+---- Index on question id 
+--CREATE INDEX collection_item_question_id_idx ON 
+-- collection_item (question_id);
 
--- Index on collection id and question id combination for improving performance of AND queries 
-CREATE INDEX collection_item_collection_id_question_id_idx ON 
- collection_item (collection_id, question_id);
+---- Index on collection id and question id combination for improving performance of AND queries 
+--CREATE INDEX collection_item_collection_id_question_id_idx ON 
+-- collection_item (collection_id, question_id);
 
 -- Container for a questions with metadata and settings information 
 CREATE TABLE assessment (
@@ -178,7 +147,7 @@ CREATE TABLE assessment (
  original_creator_id varchar(36) NOT NULL, 
  original_assessment_id varchar(36),
  publish_date timestamp, 
- type assessment_type NOT NULL,
+ location assessment_location NOT NULL,
  url varchar(2000), 
  thumbnail varchar(2000), 
  learning_objective varchar(20000) NOT NULL, 
@@ -193,7 +162,7 @@ CREATE TABLE assessment (
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
 );
-
+    
 -- Index on owner to improve query performance of queries that lists of assessments 
 --for a given user.  
 CREATE INDEX assessment_original_creator_id_idx ON 
@@ -201,11 +170,6 @@ CREATE INDEX assessment_original_creator_id_idx ON
 
 CREATE INDEX assessment_creator_id_idx ON 
  assessment (creator_id);
-
--- Index on last modified to improve query performance of queries that 
---provides list of top N collections modified   
-CREATE INDEX assessment_modified_idx ON 
- assessment (modified);
 
 -- Create inverted index on collaborators JSONB doc, so we can search for a given user if 
 --she is collaborating on a particular assessment and it needs to be shown in 
@@ -216,31 +180,31 @@ CREATE INDEX assessment_collaborator_gin ON assessment
 CREATE INDEX assessment_title_idx ON 
  assessment (title);
 
--- Container for a sequenced set of questions belonging to an assessment 
-CREATE TABLE assessment_item (
- id varchar(36) NOT NULL, 
- assessment_id varchar(36) NOT NULL,
- question_id varchar(36) NOT NULL,
- sequence_id smallint NOT NULL,
- creator_id varchar(36) NOT NULL,
- created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
- modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
- accessed timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
- is_deleted boolean NOT NULL DEFAULT FALSE,
- PRIMARY KEY (id)
-);
+---- Container for a sequenced set of questions belonging to an assessment 
+--CREATE TABLE assessment_item (
+-- id varchar(36) NOT NULL, 
+-- assessment_id varchar(36) NOT NULL,
+-- question_id varchar(36) NOT NULL,
+-- sequence_id smallint NOT NULL,
+-- creator_id varchar(36) NOT NULL,
+-- created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+-- modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
+-- accessed timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+-- is_deleted boolean NOT NULL DEFAULT FALSE,
+-- PRIMARY KEY (id)
+--);
 
--- Index on assessment id as we will be querying this table based on that key
-CREATE INDEX assessment_item_assessment_id_idx ON 
- assessment_item (assessment_id);
+---- Index on assessment id as we will be querying this table based on that key
+--CREATE INDEX assessment_item_assessment_id_idx ON 
+-- assessment_item (assessment_id);
 
--- Index on question id 
-CREATE INDEX assessment_item_question_id_idx ON 
- assessment_item (question_id);
+---- Index on question id 
+--CREATE INDEX assessment_item_question_id_idx ON 
+-- assessment_item (question_id);
 
--- Index on assessment id and question id combination for improving peformance of AND queries
-CREATE INDEX assessment_item_assessment_id_question_id_idx ON 
- assessment_item (assessment_id, question_id);
+---- Index on assessment id and question id combination for improving peformance of AND queries
+--CREATE INDEX assessment_item_assessment_id_question_id_idx ON 
+-- assessment_item (assessment_id, question_id);
 
 -- Information for the user course with metadata 
 CREATE TABLE course (
