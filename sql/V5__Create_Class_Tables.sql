@@ -2,6 +2,12 @@
 -- psql -U nucleus -f <path to>/V5__Create_Class_Tables.sql
 
 
+-- Supported class member status
+CREATE TYPE class_member_status AS ENUM ('invited', 'pending', 'joined');
+
+-- Supported class visibility  
+CREATE TYPE class_sharing AS ENUM ('open', 'restricted');
+
 -- Information about user created class 
 CREATE TABLE class (
  class_id varchar(36) NOT NULL,

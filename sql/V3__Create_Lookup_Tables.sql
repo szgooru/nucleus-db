@@ -1,35 +1,12 @@
 
 -- You can run this command using the newly created nucleus user:
 -- psql -U nucleus -f <path to>/V3__Create_Lookup_Tables.sql
-
--- Content format types
-CREATE TYPE content_format AS ENUM ('resource', 'question');
-
--- Content format subtypes 
-CREATE TYPE content_subformat AS ENUM ('video', 'webpage', 'interactive', 'image', 
- 'text', 'audio', 'multiple_choice', 'multiple_answer', 
- 'true_false', 'fill_in_the_blank', 'open_ended', 'hot_text_reorder', 
- 'hot_text_highlight',  'hot_spot_image', 'hot_spot_text', 'external');
-
--- Content container types
-CREATE TYPE content_container_type AS ENUM ('collection', 'assessment');
  
--- Supported class member status
-CREATE TYPE class_member_status AS ENUM ('invited', 'pending', 'joined');
-
 -- Supported classification type 
 CREATE TYPE subject_classification AS ENUM ('k_12', 'higher_education', 'professional_learning');
 
--- Supported class visibility  
-CREATE TYPE class_sharing AS ENUM ('open', 'restricted');
-
-CREATE TYPE assessment_location AS ENUM ('internal', 'external');
-
 -- Supported code types 
 CREATE TYPE code_type AS ENUM ('standard_level_0', 'standard_level_1', 'standard_level_2', 'learning_target_group', 'learning_target');
-
--- Grading type for assessments
-CREATE TYPE grading_type AS ENUM ('system', 'teacher');
 
 
 -- This enum lists out reference types supported in Gooru that the content is 

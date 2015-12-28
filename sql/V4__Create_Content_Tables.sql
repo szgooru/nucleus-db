@@ -2,6 +2,23 @@
 -- You can run this command using the newly created nucleus user:
 -- psql -U nucleus -f <path to>/V4__Create_Content_Tables.sql
 
+-- Content format types
+CREATE TYPE content_format AS ENUM ('resource', 'question');
+
+-- Content format subtypes 
+CREATE TYPE content_subformat AS ENUM ('video', 'webpage', 'interactive', 'image', 
+ 'text', 'audio', 'multiple_choice', 'multiple_answer', 
+ 'true_false', 'fill_in_the_blank', 'open_ended', 'hot_text_reorder', 
+ 'hot_text_highlight',  'hot_spot_image', 'hot_spot_text', 'external');
+
+-- Content container types
+CREATE TYPE content_container_type AS ENUM ('collection', 'assessment');
+
+-- Grading type for assessments
+CREATE TYPE grading_type AS ENUM ('system', 'teacher');
+
+-- Location of the assessment -- legacy support
+CREATE TYPE assessment_location AS ENUM ('internal', 'external');
 
 -- Information about content ingested offline / created by the user
 CREATE TABLE content (
