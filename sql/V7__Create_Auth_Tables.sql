@@ -1,5 +1,5 @@
 -- You can run this command using the newly created nucleus user:
--- psql -U nucleus -f <path to>/V5__Create_Auth_Tables.sql
+-- psql -U nucleus -f <path to>/V7__Create_Auth_Tables.sql
 
 -- Information about api consumer
 CREATE TABLE auth_client (

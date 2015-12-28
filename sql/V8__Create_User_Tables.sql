@@ -1,5 +1,5 @@
 -- You can run this command using the newly created nucleus user:
--- psql -U nucleus -f <path to>/V6__Create_User_Tables.sql
+-- psql -U nucleus -f <path to>/V8__Create_User_Tables.sql
 
 CREATE TYPE user_identity_type AS ENUM ('google', 'wsfed','saml', 'credential');
 CREATE TYPE user_identity_status AS ENUM ('active', 'deactived', 'deleted');
