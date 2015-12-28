@@ -93,6 +93,8 @@ CREATE INDEX user_identity_user_id_idx ON user_identity (user_id);
 CREATE TABLE user_permission (
     user_id varchar(36) NOT NULL,
     permission jsonb,
+    created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+    modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
     PRIMARY KEY (user_id)
 );
 
@@ -101,6 +103,8 @@ CREATE TABLE user_preference (
     user_id varchar(36) NOT NULL,
     standard_preference jsonb NOT NULL,
     profile_visiblity boolean NOT NULL DEFAULT FALSE,
+    created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+    modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
     PRIMARY KEY (user_id)
 );
 
