@@ -9,7 +9,7 @@ CREATE TYPE content_format AS ENUM ('resource', 'question');
 CREATE TYPE content_subformat AS ENUM ('video', 'webpage', 'interactive', 'image', 
  'text', 'audio', 'multiple_choice', 'multiple_answer', 
  'true_false', 'fill_in_the_blank', 'open_ended', 'hot_text_reorder', 
- 'hot_text_highlight',  'hot_spot_image', 'hot_spot_text');
+ 'hot_text_highlight',  'hot_spot_image', 'hot_spot_text', 'external');
 
 -- Content container types
 CREATE TYPE content_container_type AS ENUM ('collection', 'assessment');
@@ -24,9 +24,6 @@ CREATE TYPE subject_classification AS ENUM ('k_12', 'higher_education', 'profess
 CREATE TYPE class_sharing AS ENUM ('open', 'restricted');
 
 CREATE TYPE assessment_location AS ENUM ('internal', 'external');
-
--- Type of question 
-CREATE TYPE question_location AS ENUM ('internal', 'external');
 
 -- Supported code types 
 CREATE TYPE code_type AS ENUM ('standard_level_0', 'standard_level_1', 'standard_level_2', 'learning_target_group', 'learning_target');

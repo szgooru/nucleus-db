@@ -20,7 +20,6 @@ CREATE TABLE content (
  description varchar(20000), 
  format content_format NOT NULL,
  subformat content_subformat NOT NULL,
- question_location question_location,
  answer JSONB,
  metadata JSONB,
  taxonomy JSONB,
