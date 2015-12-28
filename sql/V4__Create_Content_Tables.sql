@@ -5,7 +5,7 @@
 
 -- Information about content ingested offline / created by the user
 CREATE TABLE content (
- id varchar(36) NOT NULL,
+ content_id varchar(36) NOT NULL,
  title varchar(20000) NOT NULL,
  url varchar(2000),
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
@@ -38,7 +38,7 @@ CREATE TABLE content (
  is_frame_breaker boolean DEFAULT FALSE,
  is_broken boolean DEFAULT FALSE,
  is_deleted boolean NOT NULL DEFAULT FALSE,
- PRIMARY KEY (id)
+ PRIMARY KEY (content_id)
 );
 
 CREATE INDEX content_creator_id_idx ON 
@@ -63,7 +63,7 @@ CREATE INDEX content_course_id_unit_id_lesson_id_collection_id_idx ON
 
 -- Container for resources and/or questions or just questions with metadata information
 CREATE TABLE collection (
- id varchar(36) NOT NULL, 
+ collection_id varchar(36) NOT NULL, 
  title varchar(5000) NOT NULL, 
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
@@ -86,7 +86,7 @@ CREATE TABLE collection (
  grading_type grading_type,
  visible_on_profile boolean NOT NULL DEFAULT FALSE,  
  is_deleted boolean NOT NULL DEFAULT FALSE,
- PRIMARY KEY (id)
+ PRIMARY KEY (collection_id)
 ); 
 
 CREATE INDEX collection_original_creator_id_idx ON 
@@ -109,7 +109,7 @@ CREATE INDEX collection_content_container_type_idx ON
  
 -- Information for the user course with metadata 
 CREATE TABLE course (
- id varchar(36) NOT NULL,
+ course_id varchar(36) NOT NULL,
  title varchar(5000) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
@@ -126,7 +126,7 @@ CREATE TABLE course (
  class_list JSONB,
  visible_on_profile boolean NOT NULL DEFAULT FALSE,  
  is_deleted boolean NOT NULL DEFAULT FALSE,
- PRIMARY KEY (id)
+ PRIMARY KEY (course_id)
 );
 
 CREATE INDEX course_original_creator_id_idx ON 
@@ -196,7 +196,6 @@ CREATE INDEX course_unit_lesson_course_id_unit_id_idx ON
 
 -- Container for user created course, unit and lesson and collection/assessment information with metadata
 CREATE TABLE course_unit_lesson_collection (
- id varchar(36) NOT NULL, 
  course_id varchar(36) NOT NULL, 
  unit_id varchar(36) NOT NULL,
  lesson_id varchar(36) NOT NULL,

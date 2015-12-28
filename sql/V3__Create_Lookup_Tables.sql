@@ -57,14 +57,14 @@ CREATE TYPE metadata_reference_type AS ENUM ('educational_use', 'moments_of_lear
 
 -- Generic lookup for metadata_reference_type values
 CREATE TABLE metadata_reference (
- id serial NOT NULL,
+ metadata_reference_id serial NOT NULL,
  creator_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
- type metadata_reference_type NOT NULL,
+ metadata_reference_type metadata_reference_type NOT NULL,
  label varchar(2000) NOT NULL,
  sequence_id smallint NOT NULL,
- PRIMARY KEY(id)
+ PRIMARY KEY(metadata_reference_id)
 ); 
 
 -- Stores the 21st century skill values
@@ -74,7 +74,7 @@ CREATE TABLE metadata_reference (
 -- Key classification could be any of Key Cognitive Skills and Strategies, 
 --Key Content Knowledge and Key Learning Skills and Techniques 
 CREATE TABLE twenty_one_century_skill (
- id serial NOT NULL,
+ twenty_one_century_skill_id serial NOT NULL,
  creator_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
@@ -85,7 +85,7 @@ CREATE TABLE twenty_one_century_skill (
  conley_four_keys_model varchar(2000),
  p21_framework_model varchar(2000),
  national_research_center_model varchar(2000),
- PRIMARY KEY(id)
+ PRIMARY KEY(twenty_one_century_skill_id)
 );
 
 -- Store standards framework table code and name 
@@ -97,7 +97,7 @@ CREATE TABLE standard_framework (
 
 -- Gooru default subject information 
 CREATE TABLE default_subject (
- id bigserial NOT NULL,
+ default_subject_id bigserial NOT NULL,
  creator_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
@@ -105,17 +105,17 @@ CREATE TABLE default_subject (
  display_code varchar(2000) NOT NULL, 
  description varchar(5000), 
  sequence_id smallint NOT NULL, 
- classification subject_classification NOT NULL,
+ subject_classification subject_classification NOT NULL,
  has_taxonomy_representation boolean NOT NULL DEFAULT FALSE,
  default_standard_framework_code varchar(36) REFERENCES standard_framework (code),
  is_default_preference boolean NOT NULL DEFAULT FALSE,
  UNIQUE (code),
- PRIMARY KEY(id)
+ PRIMARY KEY(default_subject_id)
 );
 
 -- Taxonomy subject information 
 CREATE TABLE taxonomy_subject (
- id bigserial NOT NULL,
+ taxonomy_subject_id bigserial NOT NULL,
  creator_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
@@ -123,11 +123,11 @@ CREATE TABLE taxonomy_subject (
  display_code varchar(2000) NOT NULL, 
  description varchar(5000), 
  sequence_id smallint NOT NULL, 
- classification subject_classification NOT NULL,
- default_subject_id bigint NOT NULL REFERENCES default_subject (id),
+ subject_classification subject_classification NOT NULL,
+ default_subject_id bigint NOT NULL REFERENCES default_subject (default_subject_id),
  standard_framework_code varchar(36) NOT NULL REFERENCES standard_framework (code),
  UNIQUE (code, standard_framework_code),
- PRIMARY KEY(id)
+ PRIMARY KEY(taxonomy_subject_id)
 );
 
 CREATE INDEX taxonomy_subject_default_subject_id_idx ON 
@@ -138,8 +138,8 @@ CREATE INDEX taxonomy_subject_standard_framework_code_idx ON
 
 -- Gooru taxonomy default course information 
 CREATE TABLE default_course (
- id bigserial NOT NULL,
- default_subject_id bigint NOT NULL REFERENCES default_subject (id),
+ default_course_id bigserial NOT NULL,
+ default_subject_id bigint NOT NULL REFERENCES default_subject (default_subject_id),
  creator_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
@@ -149,7 +149,7 @@ CREATE TABLE default_course (
  grades varchar(2000),
  sequence_id smallint NOT NULL, 
  has_taxonomy_representation boolean NOT NULL DEFAULT FALSE,
- PRIMARY KEY(id)
+ PRIMARY KEY(default_course_id)
 );
 
 CREATE INDEX default_course_default_subject_id_idx ON 
@@ -157,8 +157,8 @@ CREATE INDEX default_course_default_subject_id_idx ON
 
 -- Taxonomy course information 
 CREATE TABLE taxonomy_course (
- id bigserial NOT NULL,
- taxonomy_subject_id bigint NOT NULL REFERENCES taxonomy_subject (id),
+ taxonomy_course_id bigserial NOT NULL,
+ taxonomy_subject_id bigint NOT NULL REFERENCES taxonomy_subject (taxonomy_subject_id),
  creator_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
@@ -167,9 +167,9 @@ CREATE TABLE taxonomy_course (
  description varchar(5000), 
  grades varchar(2000),
  sequence_id smallint NOT NULL, 
- default_course_id bigint NOT NULL REFERENCES default_course (id),
+ default_course_id bigint NOT NULL REFERENCES default_course (default_course_id),
  standard_framework_code varchar(36) NOT NULL REFERENCES standard_framework (code),
- PRIMARY KEY(id)
+ PRIMARY KEY(taxonomy_course_id)
 );
 
 CREATE INDEX taxonomy_course_taxonomy_subject_id_idx ON 
@@ -177,7 +177,7 @@ CREATE INDEX taxonomy_course_taxonomy_subject_id_idx ON
 
 -- Gooru default domain information 
 CREATE TABLE default_domain (
- id bigserial NOT NULL,
+ default_domain_id bigserial NOT NULL,
  creator_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
@@ -186,12 +186,12 @@ CREATE TABLE default_domain (
  description varchar(5000), 
  sequence_id smallint NOT NULL, 
  has_taxonomy_representation boolean NOT NULL DEFAULT FALSE,
- PRIMARY KEY(id)
+ PRIMARY KEY(default_domain_id)
 );
 
 -- Taxonomy domain information 
 CREATE TABLE taxonomy_domain (
- id bigserial NOT NULL,
+ taxonomy_domain_id bigserial NOT NULL,
  creator_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
@@ -199,9 +199,9 @@ CREATE TABLE taxonomy_domain (
  display_code varchar(2000) NOT NULL,
  description varchar(5000), 
  sequence_id smallint NOT NULL, 
- default_domain_id bigint NOT NULL REFERENCES default_domain (id),
+ default_domain_id bigint NOT NULL REFERENCES default_domain (default_domain_id),
  standard_framework_code varchar(36) NOT NULL REFERENCES standard_framework (code), 
- PRIMARY KEY(id)
+ PRIMARY KEY(taxonomy_domain_id)
 );
 
 CREATE INDEX taxonomy_domain_default_domain_id_idx ON 
@@ -209,9 +209,9 @@ CREATE INDEX taxonomy_domain_default_domain_id_idx ON
 
 -- Mapping between default course and domain 
 CREATE TABLE default_subdomain (
- id bigserial NOT NULL,
- default_course_id bigint NOT NULL REFERENCES default_course (id),
- default_domain_id bigint NOT NULL REFERENCES default_domain (id),
+ default_subdomain_id bigserial NOT NULL,
+ default_course_id bigint NOT NULL REFERENCES default_course (default_course_id),
+ default_domain_id bigint NOT NULL REFERENCES default_domain (default_domain_id),
  creator_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
@@ -221,7 +221,7 @@ CREATE TABLE default_subdomain (
  description varchar(5000), 
  sequence_id smallint NOT NULL, 
  has_taxonomy_representation boolean NOT NULL DEFAULT FALSE,
- PRIMARY KEY(id)
+ PRIMARY KEY(default_subdomain_id)
 );
 
 CREATE INDEX default_subdomain_course_id_domain_id_idx ON 
@@ -229,9 +229,9 @@ CREATE INDEX default_subdomain_course_id_domain_id_idx ON
 
 -- Mapping between taxonomy course and domain 
 CREATE TABLE taxonomy_subdomain (
- id bigserial NOT NULL,
- taxonomy_course_id bigint NOT NULL REFERENCES taxonomy_course (id),
- taxonomy_domain_id bigint NOT NULL REFERENCES taxonomy_domain (id),
+ taxonomy_subdomain_id bigserial NOT NULL,
+ taxonomy_course_id bigint NOT NULL REFERENCES taxonomy_course (taxonomy_course_id),
+ taxonomy_domain_id bigint NOT NULL REFERENCES taxonomy_domain (taxonomy_domain_id),
  creator_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
@@ -240,9 +240,9 @@ CREATE TABLE taxonomy_subdomain (
  domain_display_code varchar(2000) NOT NULL,
  description varchar(5000), 
  sequence_id smallint NOT NULL, 
- default_subdomain_id bigint NOT NULL REFERENCES default_subdomain (id),
+ default_subdomain_id bigint NOT NULL REFERENCES default_subdomain (default_subdomain_id),
  standard_framework_code varchar(36) NOT NULL REFERENCES standard_framework (code), 
- PRIMARY KEY(id)
+ PRIMARY KEY(taxonomy_subdomain_id)
 );
 
 CREATE INDEX taxonomy_subdomain_course_id_domain_id_idx ON 
@@ -250,7 +250,7 @@ CREATE INDEX taxonomy_subdomain_course_id_domain_id_idx ON
 
 -- Generic table to store gooru default standards & learning target information
 CREATE TABLE default_code (
- id bigserial NOT NULL,
+ default_code_id bigserial NOT NULL,
  creator_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
@@ -260,10 +260,10 @@ CREATE TABLE default_code (
  parent_default_code_id bigint, 
  root_default_code_id bigint,
  sequence_id smallint NOT NULL,
- type code_type NOT NULL,
+ code_type code_type NOT NULL,
  has_taxonomy_representation boolean NOT NULL DEFAULT FALSE,
  UNIQUE (code),
- PRIMARY KEY(id)
+ PRIMARY KEY(default_code_id)
 );
 
 CREATE INDEX default_code_parent_default_code_id_idx ON 
@@ -274,7 +274,7 @@ CREATE INDEX default_code_root_default_code_id_idx ON
 
 -- Generic table to store standards & learning target information
 CREATE TABLE taxonomy_code (
- id bigserial NOT NULL,
+ taxonomy_code_id bigserial NOT NULL,
  creator_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
@@ -284,12 +284,12 @@ CREATE TABLE taxonomy_code (
  parent_taxonomy_code_id bigint, 
  root_taxonomy_code_id bigint,
  sequence_id smallint NOT NULL,
- default_code_id bigint NOT NULL REFERENCES default_code (id), 
+ default_code_id bigint NOT NULL REFERENCES default_code (default_code_id), 
  standard_framework_code varchar(36) NOT NULL REFERENCES standard_framework (code), 
- type code_type NOT NULL,
+ code_type code_type NOT NULL,
  is_selectable boolean NOT NULL DEFAULT FALSE, 
  UNIQUE (code),
- PRIMARY KEY(id)
+ PRIMARY KEY(taxonomy_code_id)
 );
 
 CREATE INDEX taxonomy_code_parent_taxonomy_code_id_idx ON 
@@ -349,7 +349,7 @@ CREATE INDEX taxonomy_learning_target_map_subject_learning_target_code_idx ON
 -- Generic table to store standards & learning target information 
 -- NOT mapped to Gooru Taxonomy
 CREATE TABLE code (
- id bigserial NOT NULL,
+ code_id bigserial NOT NULL,
  creator_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
@@ -362,7 +362,7 @@ CREATE TABLE code (
  standard_framework_code varchar(36) NOT NULL REFERENCES standard_framework (code), 
  type code_type NOT NULL,
  is_selectable boolean NOT NULL DEFAULT FALSE,
- PRIMARY KEY(id)
+ PRIMARY KEY(code_id)
 );
 
 CREATE INDEX code_parent_code_id_idx ON 

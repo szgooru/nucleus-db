@@ -4,7 +4,7 @@
 
 -- Information about user created class 
 CREATE TABLE class (
- id varchar(36) NOT NULL,
+ class_id varchar(36) NOT NULL,
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  creator_id varchar(36) NOT NULL,
@@ -21,8 +21,8 @@ CREATE TABLE class (
  is_deleted boolean NOT NULL DEFAULT FALSE,
  collaborator JSONB,
  is_archived boolean NOT NULL DEFAULT FALSE,
- PRIMARY KEY (id),
- UNIQUE (code)
+ UNIQUE (code),
+ PRIMARY KEY (class_id)
 );
 
 -- Inverted index on collaborator for a given class 
