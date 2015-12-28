@@ -12,7 +12,7 @@ CREATE TABLE class (
  description varchar(5000),
  greeting varchar(5000),
  grade varchar(5000) NOT NULL,
- visibility class_visibility NOT NULL,
+ sharing class_sharing NOT NULL,
  cover_image varchar(2000), 
  code varchar(36) NOT NULL,
  min_score smallint NOT NULL,
@@ -20,6 +20,7 @@ CREATE TABLE class (
  course_id varchar(36),
  is_deleted boolean NOT NULL DEFAULT FALSE,
  collaborator JSONB,
+ is_archived boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id),
  UNIQUE (code)
 );

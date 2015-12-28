@@ -14,12 +14,16 @@ CREATE TABLE resource (
  description varchar(20000), 
  format resource_format NOT NULL, 
  thumbnail varchar(2000),
- url varchar(2000) NOT NULL, 
- sharing sharing_type NOT NULL, 
- is_frame_breaker boolean,
- is_broken boolean,
- is_deleted boolean NOT NULL DEFAULT FALSE,
+ url varchar(2000), 
+ is_copyright_owner boolean NOT NULL DEFAULT FALSE,
+ copyright_owner JSONB,  
  metadata JSONB,
+ taxonomy JSONB,
+ depth_of_knowledge JSONB,
+ is_frame_breaker boolean DEFAULT FALSE,
+ is_broken boolean DEFAULT FALSE,
+ visible_on_profile boolean NOT NULL DEFAULT FALSE,  
+ is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id),
  UNIQUE (url)
 );
@@ -34,17 +38,21 @@ CREATE INDEX resource_creator_id_idx ON
 CREATE INDEX resource_modified_idx ON 
  resource (modified);
 
+CREATE INDEX resource_title_idx ON 
+ resource (title);
+
 
 -- Information about question ingested offline / created by the user
 CREATE TABLE question (
  id varchar(36) NOT NULL,
+ short_title varchar(5000) NOT NULL,
  title varchar(20000) NOT NULL, 
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  accessed timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  creator_id varchar(36) NOT NULL,
  original_creator_id varchar(36) NOT NULL, 
- original_question_id varchar(36) NOT NULL, 
+ original_question_id varchar(36), 
  publish_date timestamp,
  format question_format NOT NULL,
  type question_type NOT NULL,
@@ -52,7 +60,12 @@ CREATE TABLE question (
  hint JSONB NOT NULL,
  detail JSONB,
  answer JSONB NOT NULL,
+ url varchar(2000),
+ narration varchar(5000),
  metadata JSONB,
+ taxonomy JSONB,
+ depth_of_knowledge JSONB,
+ visible_on_profile boolean NOT NULL DEFAULT FALSE,  
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
 );
@@ -71,6 +84,9 @@ CREATE INDEX question_creator_id_idx ON
 CREATE INDEX question_modified_idx ON 
  question (modified);
 
+CREATE INDEX question_short_title_idx ON 
+ question (short_title);
+
 -- Container for resources and/or questions with metadata information
 CREATE TABLE collection (
  id varchar(36) NOT NULL, 
@@ -80,20 +96,18 @@ CREATE TABLE collection (
  accessed timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  creator_id varchar(36) NOT NULL,
  original_creator_id varchar(36) NOT NULL,
- original_collection_id varchar(36) NOT NULL,
+ original_collection_id varchar(36),
  publish_date timestamp,
  thumbnail varchar(2000) NOT NULL,
- sharing sharing_type NOT NULL, 
  learning_objective varchar(20000) NOT NULL, 
  audience JSONB, 
- metadata JSONB, 
  collaborator JSONB,
+ metadata JSONB, 
+ taxonomy JSONB, 
+ visible_on_profile boolean NOT NULL DEFAULT FALSE,  
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
 ); 
-
--- Index on owner to improve query performance of queries that lists of collections 
---for a given user.  
 
 CREATE INDEX collection_original_creator_id_idx ON 
  collection (original_creator_id);
@@ -112,6 +126,9 @@ CREATE INDEX collection_modified_idx ON
 CREATE INDEX collection_collaborator_gin ON collection 
  USING gin (collaborator jsonb_path_ops);
 
+CREATE INDEX collection_title_idx ON 
+ collection (title);
+
 -- Container for a sequenced set of resources or questions belonging to a collection 
 CREATE TABLE collection_item (
  id varchar(36) NOT NULL, 
@@ -125,6 +142,7 @@ CREATE TABLE collection_item (
  creator_id varchar(36) NOT NULL,
  narration varchar(5000), 
  metadata JSONB,
+ taxonomy JSONB, 
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
  );
@@ -158,18 +176,20 @@ CREATE TABLE assessment (
  accessed timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  creator_id varchar(36) NOT NULL,
  original_creator_id varchar(36) NOT NULL, 
- original_assessment_id varchar(36) NOT NULL,
+ original_assessment_id varchar(36),
  publish_date timestamp, 
  type assessment_type NOT NULL,
  url varchar(2000), 
  thumbnail varchar(2000), 
- sharing sharing_type NOT NULL, 
  learning_objective varchar(20000) NOT NULL, 
  audience JSONB, 
  collaborator JSONB, 
  metadata JSONB,
+ taxonomy JSONB, 
  login_required boolean, 
  settings JSONB,
+ graded_by grading_type,
+ visible_on_profile boolean NOT NULL DEFAULT FALSE,  
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
 );
@@ -193,6 +213,9 @@ CREATE INDEX assessment_modified_idx ON
 CREATE INDEX assessment_collaborator_gin ON assessment 
  USING gin (collaborator jsonb_path_ops);
 
+CREATE INDEX assessment_title_idx ON 
+ assessment (title);
+
 -- Container for a sequenced set of questions belonging to an assessment 
 CREATE TABLE assessment_item (
  id varchar(36) NOT NULL, 
@@ -203,7 +226,6 @@ CREATE TABLE assessment_item (
  created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'), 
  accessed timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
- narration varchar(5000),
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
 );
@@ -229,14 +251,15 @@ CREATE TABLE course (
  accessed timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  creator_id varchar(36) NOT NULL,
  original_creator_id varchar(36) NOT NULL, 
- original_course_id varchar(36) NOT NULL,
+ original_course_id varchar(36),
  publish_date timestamp, 
  thumbnail varchar(2000), 
- sharing sharing_type NOT NULL,
  audience JSONB,
  metadata JSONB,
+ taxonomy JSONB,
  collaborator JSONB,
  class_list JSONB,
+ visible_on_profile boolean NOT NULL DEFAULT FALSE,  
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
 );
@@ -262,6 +285,9 @@ CREATE INDEX course_class_list_gin ON course
 CREATE INDEX course_collaborator_gin ON course 
  USING gin (collaborator jsonb_path_ops);
 
+CREATE INDEX course_title_idx ON 
+ course (title);
+
 -- Container for user created course and unit information with metadata
 CREATE TABLE course_unit(
  course_id varchar(36) NOT NULL,
@@ -272,10 +298,11 @@ CREATE TABLE course_unit(
  accessed timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  creator_id varchar(36) NOT NULL, 
  original_creator_id varchar(36) NOT NULL, 
- original_unit_id varchar(36) NOT NULL,
+ original_unit_id varchar(36),
  big_ideas varchar(20000) NOT NULL,
  essential_questions varchar(20000) NOT NULL,
  metadata JSONB,
+ taxonomy JSONB,
  sequence_id smallint NOT NULL,
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (course_id, unit_id)
@@ -296,8 +323,9 @@ CREATE TABLE course_unit_lesson(
  accessed timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  creator_id varchar(36) NOT NULL, 
  original_creator_id varchar(36) NOT NULL, 
- original_lesson_id varchar(36) NOT NULL,
+ original_lesson_id varchar(36),
  metadata JSONB,
+ taxonomy JSONB,
  sequence_id smallint NOT NULL,
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (course_id, unit_id, lesson_id)
@@ -319,7 +347,7 @@ CREATE TABLE course_unit_lesson_collection_assessment (
  lesson_id varchar(36) NOT NULL,
  collection_id varchar(36),
  assessment_id varchar(36),
- sequence_id smallint,
+ sequence_id smallint NOT NULL,  
  is_deleted boolean NOT NULL DEFAULT FALSE,
  PRIMARY KEY (id)
 );
