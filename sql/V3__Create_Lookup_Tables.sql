@@ -11,6 +11,9 @@ CREATE TYPE content_subformat AS ENUM ('video', 'webpage', 'interactive', 'image
  'true_false', 'fill_in_the_blank', 'open_ended', 'hot_text_reorder', 
  'hot_text_highlight',  'hot_spot_image', 'hot_spot_text');
 
+-- Content container types
+CREATE TYPE content_container_type AS ENUM ('collection', 'assessment');
+ 
 -- Supported class member status
 CREATE TYPE class_member_status AS ENUM ('invited', 'pending', 'joined');
 
