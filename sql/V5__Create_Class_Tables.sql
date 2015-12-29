@@ -18,7 +18,7 @@ CREATE TABLE class (
  description varchar(5000),
  greeting varchar(5000),
  grade varchar(5000) NOT NULL,
- sharing class_sharing NOT NULL,
+ class_sharing class_sharing NOT NULL,
  cover_image varchar(2000), 
  code varchar(36) NOT NULL,
  min_score smallint NOT NULL,
@@ -48,11 +48,11 @@ CREATE INDEX class_course_id_idx ON
 -- Information about members belonging to a class with invited, joined or pending
 --status 
 CREATE TABLE class_member (
- created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
- modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
  class_id varchar(36) NOT NULL,
  user_id varchar(36) NOT NULL, 
- status class_member_status NOT NULL, 
+ created timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+ modified timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+ class_member_status class_member_status NOT NULL, 
  PRIMARY KEY (class_id, user_id) 
 );
 

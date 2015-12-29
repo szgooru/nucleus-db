@@ -35,8 +35,8 @@ CREATE TABLE content (
  short_title varchar(5000),
  narration varchar(5000),
  description varchar(20000), 
- format content_format NOT NULL,
- subformat content_subformat NOT NULL,
+ content_format content_format NOT NULL,
+ content_subformat content_subformat NOT NULL,
  answer JSONB,
  metadata JSONB,
  taxonomy JSONB,
@@ -61,7 +61,7 @@ CREATE INDEX content_creator_id_idx ON
  content (creator_id);
 
 CREATE INDEX content_format_idx ON 
- content (format);
+ content (content_format);
  
 -- Index for filtering requirements on profile
 CREATE INDEX content_title_idx ON 
@@ -95,7 +95,7 @@ CREATE TABLE collection (
  collaborator JSONB,
  metadata JSONB, 
  taxonomy JSONB, 
- location assessment_location,
+ assessment_location assessment_location,
  url varchar(2000), 
  login_required boolean, 
  settings JSONB,
