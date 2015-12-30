@@ -20,6 +20,11 @@ CREATE TYPE grading_type AS ENUM ('system', 'teacher');
 -- Location of the assessment -- legacy support
 CREATE TYPE assessment_location AS ENUM ('internal', 'external');
 
+
+-- Orientation of the content 
+CREATE TYPE orientation AS ENUM ('teacher', 'student');
+
+
 -- Information about content ingested offline / created by the user
 CREATE TABLE content (
  content_id varchar(36) NOT NULL,
@@ -96,6 +101,7 @@ CREATE TABLE collection (
  metadata JSONB, 
  taxonomy JSONB, 
  assessment_location assessment_location,
+ orientation orientation NOT NULL DEFAULT 'student', 
  url varchar(2000), 
  login_required boolean, 
  setting JSONB,

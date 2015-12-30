@@ -27,7 +27,7 @@ CREATE TYPE code_type AS ENUM ('standard_level_0', 'standard_level_1', 'standard
 -- 21st Century skills: Content mapping to 21st century skills as defined by P21
 CREATE TYPE metadata_reference_type AS ENUM ('educational_use', 'moments_of_learning', 
  'depth_of_knowledge', 'reading_level', 'audience', 'advertisement_level', 
- 'hazard_level', 'media_feature');
+ 'hazard_level', 'media_feature', 'grade');
 
 -- Generic lookup for metadata_reference_type values
 CREATE TABLE metadata_reference (
