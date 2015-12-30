@@ -14,16 +14,16 @@ You will need to install PostgreSQL v9.4 in order to run these scripts. Installa
 2. Once the Role and DB is created, use the script - V1__Nucleus_DB_Baseline.sql to setup the entities.
 
 ## 4. Evolving the Nucleus DB
-You can evolve the Nucleus DB systematically by integrating with the Flyway tool which can be ound here:  
+You can evolve the Nucleus DB systematically by integrating with the Flyway tool which can be found here:  
 http://flywaydb.org/documentation/existing.html.
 
 1. Generate a baseline schema first using: 
-./flyway baseline -Dflyway.baselineVersion=1 -Dflyway.baselineDescription="Nucleus DB baseline"
+`./flyway baseline -Dflyway.baselineVersion=1 -Dflyway.baselineDescription="Nucleus DB baseline"`
 
-2. Any DB changes that need to be done, can be specified with a script file pattern V*__<>.sql 
+2. Any DB changes that need to be done, can be specified with a script file pattern V*__<filename>.sql 
 
 3. After setting up the script, one can then migrate the current schema to the new desired schema using:
-./flyway migrate 
+`./flyway migrate` 
 
 
 
