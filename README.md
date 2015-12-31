@@ -20,10 +20,15 @@ http://flywaydb.org/documentation/existing.html.
 1. Generate a baseline schema first using:
 >./flyway baseline -Dflyway.baselineVersion=1 -Dflyway.baselineDescription="Nucleus DB baseline"
 
-2. Any DB changes that need to be done, can be specified with a script file pattern V*__script_name.sql 
+2. Any DB changes that need to be done, can be specified with a script file pattern V*__script_name.sql. 
 
 3. After setting up the script, one can then migrate the current schema to the new desired schema using:
 >./flyway migrate
+
+Note: 
+The version number needs to be incremented each time we want to make changes to the DB, so flyway can keep track of the state of the DB using the script name. For example, if, say the User table from the V1 script needs to be altered, you should add the script to a file that follows a convention as: V2__Alter_User_Table.sql. The DB should then be migrated using the migrate command. Any new tables that get added after the V2 changes are applied calls for incrementing the version number and followed by a meaningful script name, e.g. V3__Add_FooBar_Table.sql and so on. 
+
+
 
 
 
