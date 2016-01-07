@@ -20,47 +20,35 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
 
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+-- COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 SET search_path = public, pg_catalog;
 
 --
--- Name: assessment_location; Type: TYPE; Schema: public; Owner: nucleus
+-- Name: class_member_status_type; Type: TYPE; Schema: public; Owner: nucleus
 --
 
-CREATE TYPE assessment_location AS ENUM (
-    'internal',
-    'external'
-);
-
-
-ALTER TYPE assessment_location OWNER TO nucleus;
-
---
--- Name: class_member_status; Type: TYPE; Schema: public; Owner: nucleus
---
-
-CREATE TYPE class_member_status AS ENUM (
+CREATE TYPE class_member_status_type AS ENUM (
     'invited',
     'pending',
     'joined'
 );
 
 
-ALTER TYPE class_member_status OWNER TO nucleus;
+ALTER TYPE class_member_status_type OWNER TO nucleus;
 
 --
--- Name: class_sharing; Type: TYPE; Schema: public; Owner: nucleus
+-- Name: class_sharing_type; Type: TYPE; Schema: public; Owner: nucleus
 --
 
-CREATE TYPE class_sharing AS ENUM (
+CREATE TYPE class_sharing_type AS ENUM (
     'open',
     'restricted'
 );
 
 
-ALTER TYPE class_sharing OWNER TO nucleus;
+ALTER TYPE class_sharing_type OWNER TO nucleus;
 
 --
 -- Name: code_type; Type: TYPE; Schema: public; Owner: nucleus
@@ -83,49 +71,50 @@ ALTER TYPE code_type OWNER TO nucleus;
 
 CREATE TYPE content_container_type AS ENUM (
     'collection',
-    'assessment'
+    'assessment',
+    'assessment-external'
 );
 
 
 ALTER TYPE content_container_type OWNER TO nucleus;
 
 --
--- Name: content_format; Type: TYPE; Schema: public; Owner: nucleus
+-- Name: content_format_type; Type: TYPE; Schema: public; Owner: nucleus
 --
 
-CREATE TYPE content_format AS ENUM (
+CREATE TYPE content_format_type AS ENUM (
     'resource',
     'question'
 );
 
 
-ALTER TYPE content_format OWNER TO nucleus;
+ALTER TYPE content_format_type OWNER TO nucleus;
 
 --
--- Name: content_subformat; Type: TYPE; Schema: public; Owner: nucleus
+-- Name: content_subformat_type; Type: TYPE; Schema: public; Owner: nucleus
 --
 
-CREATE TYPE content_subformat AS ENUM (
-    'video',
-    'webpage',
-    'interactive',
-    'image',
-    'text',
-    'audio',
-    'multiple_choice',
-    'multiple_answer',
-    'true_false',
-    'fill_in_the_blank',
-    'open_ended',
-    'hot_text_reorder',
-    'hot_text_highlight',
-    'hot_spot_image',
-    'hot_spot_text',
-    'external'
+CREATE TYPE content_subformat_type AS ENUM (
+    'video_resource',
+    'webpage_resource',
+    'interactive_resource',
+    'image_resource',
+    'text_resource',
+    'audio_resource',
+    'multiple_choice_question',
+    'multiple_answer_question',
+    'true_false_question',
+    'fill_in_the_blank_question',
+    'open_ended_question',
+    'hot_text_reorder_question',
+    'hot_text_highlight_question',
+    'hot_spot_image_question',
+    'hot_spot_text_question',
+    'external_question'
 );
 
 
-ALTER TYPE content_subformat OWNER TO nucleus;
+ALTER TYPE content_subformat_type OWNER TO nucleus;
 
 --
 -- Name: grading_type; Type: TYPE; Schema: public; Owner: nucleus
@@ -159,35 +148,35 @@ CREATE TYPE metadata_reference_type AS ENUM (
 ALTER TYPE metadata_reference_type OWNER TO nucleus;
 
 --
--- Name: orientation; Type: TYPE; Schema: public; Owner: nucleus
+-- Name: orientation_type; Type: TYPE; Schema: public; Owner: nucleus
 --
 
-CREATE TYPE orientation AS ENUM (
+CREATE TYPE orientation_type AS ENUM (
     'teacher',
     'student'
 );
 
 
-ALTER TYPE orientation OWNER TO nucleus;
+ALTER TYPE orientation_type OWNER TO nucleus;
 
 --
--- Name: subject_classification; Type: TYPE; Schema: public; Owner: nucleus
+-- Name: subject_classification_type; Type: TYPE; Schema: public; Owner: nucleus
 --
 
-CREATE TYPE subject_classification AS ENUM (
+CREATE TYPE subject_classification_type AS ENUM (
     'k_12',
     'higher_education',
     'professional_learning'
 );
 
 
-ALTER TYPE subject_classification OWNER TO nucleus;
+ALTER TYPE subject_classification_type OWNER TO nucleus;
 
 --
--- Name: user_category; Type: TYPE; Schema: public; Owner: nucleus
+-- Name: user_category_type; Type: TYPE; Schema: public; Owner: nucleus
 --
 
-CREATE TYPE user_category AS ENUM (
+CREATE TYPE user_category_type AS ENUM (
     'Teacher',
     'Student',
     'Parent',
@@ -195,13 +184,13 @@ CREATE TYPE user_category AS ENUM (
 );
 
 
-ALTER TYPE user_category OWNER TO nucleus;
+ALTER TYPE user_category_type OWNER TO nucleus;
 
 --
--- Name: user_gender; Type: TYPE; Schema: public; Owner: nucleus
+-- Name: user_gender_type; Type: TYPE; Schema: public; Owner: nucleus
 --
 
-CREATE TYPE user_gender AS ENUM (
+CREATE TYPE user_gender_type AS ENUM (
     'male',
     'female',
     'other',
@@ -209,20 +198,20 @@ CREATE TYPE user_gender AS ENUM (
 );
 
 
-ALTER TYPE user_gender OWNER TO nucleus;
+ALTER TYPE user_gender_type OWNER TO nucleus;
 
 --
--- Name: user_identity_status; Type: TYPE; Schema: public; Owner: nucleus
+-- Name: user_identity_status_type; Type: TYPE; Schema: public; Owner: nucleus
 --
 
-CREATE TYPE user_identity_status AS ENUM (
+CREATE TYPE user_identity_status_type AS ENUM (
     'active',
     'deactived',
     'deleted'
 );
 
 
-ALTER TYPE user_identity_status OWNER TO nucleus;
+ALTER TYPE user_identity_status_type OWNER TO nucleus;
 
 --
 -- Name: user_identity_type; Type: TYPE; Schema: public; Owner: nucleus
@@ -254,8 +243,8 @@ CREATE TABLE auth_client (
     description character varying(5000),
     contact_email character varying(256),
     access_token_validity integer NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     grant_types jsonb NOT NULL,
     referer_domains jsonb
 );
@@ -268,15 +257,15 @@ ALTER TABLE auth_client OWNER TO nucleus;
 --
 
 CREATE TABLE class (
-    class_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    id character varying(36) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     creator_id character varying(36) NOT NULL,
     title character varying(5000) NOT NULL,
     description character varying(5000),
     greeting character varying(5000),
     grade character varying(5000) NOT NULL,
-    class_sharing class_sharing NOT NULL,
+    class_sharing class_sharing_type NOT NULL,
     cover_image character varying(2000),
     code character varying(36) NOT NULL,
     min_score smallint NOT NULL,
@@ -297,9 +286,9 @@ ALTER TABLE class OWNER TO nucleus;
 CREATE TABLE class_member (
     class_id character varying(36) NOT NULL,
     user_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    class_member_status class_member_status NOT NULL
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    class_member_status class_member_status_type NOT NULL
 );
 
 
@@ -310,10 +299,10 @@ ALTER TABLE class_member OWNER TO nucleus;
 --
 
 CREATE TABLE code (
-    code_id bigint NOT NULL,
+    id bigint NOT NULL,
     creator_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
     display_code character varying(2000) NOT NULL,
     description character varying(5000) NOT NULL,
@@ -346,7 +335,7 @@ ALTER TABLE code_code_id_seq OWNER TO nucleus;
 -- Name: code_code_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: nucleus
 --
 
-ALTER SEQUENCE code_code_id_seq OWNED BY code.code_id;
+ALTER SEQUENCE code_code_id_seq OWNED BY code.id;
 
 
 --
@@ -354,28 +343,27 @@ ALTER SEQUENCE code_code_id_seq OWNED BY code.code_id;
 --
 
 CREATE TABLE collection (
-    collection_id character varying(36) NOT NULL,
+    id character varying(36) NOT NULL,
     title character varying(5000) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     accessed timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     creator_id character varying(36) NOT NULL,
     original_creator_id character varying(36),
     original_collection_id character varying(36),
     publish_date timestamp without time zone,
-    content_container_type content_container_type NOT NULL,
+    format content_container_type NOT NULL,
     thumbnail character varying(2000),
     learning_objective character varying(20000),
     audience jsonb,
     collaborator jsonb,
     metadata jsonb,
     taxonomy jsonb,
-    assessment_location assessment_location,
-    orientation orientation DEFAULT 'student'::orientation NOT NULL,
+    orientation orientation_type DEFAULT 'student'::orientation_type NOT NULL,
     url character varying(2000),
     login_required boolean,
     setting jsonb,
-    grading_type grading_type,
+    grading grading_type,
     visible_on_profile boolean DEFAULT false NOT NULL,
     is_deleted boolean DEFAULT false NOT NULL
 );
@@ -388,11 +376,11 @@ ALTER TABLE collection OWNER TO nucleus;
 --
 
 CREATE TABLE content (
-    content_id character varying(36) NOT NULL,
+    id character varying(36) NOT NULL,
     title character varying(20000) NOT NULL,
     url character varying(2000),
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     accessed timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     creator_id character varying(36) NOT NULL,
     original_creator_id character varying(36) NOT NULL,
@@ -401,8 +389,8 @@ CREATE TABLE content (
     short_title character varying(5000),
     narration character varying(5000),
     description character varying(20000),
-    content_format content_format NOT NULL,
-    content_subformat content_subformat NOT NULL,
+    content_format content_format_type NOT NULL,
+    content_subformat content_subformat_type NOT NULL,
     answer jsonb,
     metadata jsonb,
     taxonomy jsonb,
@@ -430,12 +418,12 @@ ALTER TABLE content OWNER TO nucleus;
 --
 
 CREATE TABLE country (
-    country_id bigint NOT NULL,
+    id bigint NOT NULL,
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     creator_id character varying(36),
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
 );
 
 
@@ -459,7 +447,7 @@ ALTER TABLE country_country_id_seq OWNER TO nucleus;
 -- Name: country_country_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: nucleus
 --
 
-ALTER SEQUENCE country_country_id_seq OWNED BY country.country_id;
+ALTER SEQUENCE country_country_id_seq OWNED BY country.id;
 
 
 --
@@ -467,10 +455,10 @@ ALTER SEQUENCE country_country_id_seq OWNED BY country.country_id;
 --
 
 CREATE TABLE course (
-    course_id character varying(36) NOT NULL,
+    id character varying(36) NOT NULL,
     title character varying(5000) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     accessed timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     creator_id character varying(36) NOT NULL,
     original_creator_id character varying(36) NOT NULL,
@@ -497,8 +485,8 @@ CREATE TABLE course_unit (
     course_id character varying(36) NOT NULL,
     unit_id character varying(36) NOT NULL,
     title character varying(5000) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     accessed timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     creator_id character varying(36) NOT NULL,
     original_creator_id character varying(36) NOT NULL,
@@ -523,8 +511,8 @@ CREATE TABLE course_unit_lesson (
     unit_id character varying(36) NOT NULL,
     lesson_id character varying(36) NOT NULL,
     title character varying(5000) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     accessed timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     creator_id character varying(36) NOT NULL,
     original_creator_id character varying(36) NOT NULL,
@@ -561,15 +549,15 @@ ALTER TABLE course_unit_lesson_collection OWNER TO nucleus;
 CREATE TABLE default_code (
     default_code_id bigint NOT NULL,
     creator_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
     display_code character varying(2000) NOT NULL,
     description character varying(5000) NOT NULL,
     parent_default_code_id bigint,
     root_default_code_id bigint,
     sequence_id smallint NOT NULL,
-    code_type code_type NOT NULL,
+    code_classification code_type NOT NULL,
     has_taxonomy_representation boolean DEFAULT false NOT NULL
 );
 
@@ -605,8 +593,8 @@ CREATE TABLE default_course (
     default_course_id bigint NOT NULL,
     default_subject_id bigint NOT NULL,
     creator_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
     display_code character varying(2000) NOT NULL,
     description character varying(5000),
@@ -646,8 +634,8 @@ ALTER SEQUENCE default_course_default_course_id_seq OWNED BY default_course.defa
 CREATE TABLE default_domain (
     default_domain_id bigint NOT NULL,
     creator_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
     display_code character varying(2000) NOT NULL,
     description character varying(5000),
@@ -688,8 +676,8 @@ CREATE TABLE default_subdomain (
     default_course_id bigint NOT NULL,
     default_domain_id bigint NOT NULL,
     creator_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
     display_code character varying(2000) NOT NULL,
     domain_display_code character varying(2000) NOT NULL,
@@ -741,13 +729,13 @@ ALTER SEQUENCE default_subdomain_default_subdomain_id_seq OWNED BY default_subdo
 CREATE TABLE default_subject (
     default_subject_id bigint NOT NULL,
     creator_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
     display_code character varying(2000) NOT NULL,
     description character varying(5000),
     sequence_id smallint NOT NULL,
-    subject_classification subject_classification NOT NULL,
+    subject_classification subject_classification_type NOT NULL,
     has_taxonomy_representation boolean DEFAULT false NOT NULL,
     default_standard_framework_code character varying(36),
     is_default_preference boolean DEFAULT false NOT NULL
@@ -785,8 +773,8 @@ CREATE TABLE google_drive_connect (
     user_id character varying(36) NOT NULL,
     connected_email_id character varying(256) NOT NULL,
     refresh_token character varying(2000) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
 );
 
 
@@ -797,11 +785,11 @@ ALTER TABLE google_drive_connect OWNER TO nucleus;
 --
 
 CREATE TABLE metadata_reference (
-    metadata_reference_id integer NOT NULL,
+    id integer NOT NULL,
     creator_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    metadata_reference_type metadata_reference_type NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    format metadata_reference_type NOT NULL,
     label character varying(2000) NOT NULL,
     sequence_id smallint NOT NULL
 );
@@ -827,7 +815,7 @@ ALTER TABLE metadata_reference_metadata_reference_id_seq OWNER TO nucleus;
 -- Name: metadata_reference_metadata_reference_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: nucleus
 --
 
-ALTER SEQUENCE metadata_reference_metadata_reference_id_seq OWNED BY metadata_reference.metadata_reference_id;
+ALTER SEQUENCE metadata_reference_metadata_reference_id_seq OWNED BY metadata_reference.id;
 
 
 --
@@ -856,13 +844,13 @@ ALTER TABLE schema_version OWNER TO nucleus;
 --
 
 CREATE TABLE school (
-    school_id character varying(36) NOT NULL,
+    id character varying(36) NOT NULL,
     school_district_id character varying(36),
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     creator_id character varying(36),
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
 );
 
 
@@ -873,12 +861,12 @@ ALTER TABLE school OWNER TO nucleus;
 --
 
 CREATE TABLE school_district (
-    school_district_id character varying(36) NOT NULL,
+    id character varying(36) NOT NULL,
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     creator_id character varying(36),
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
 );
 
 
@@ -889,7 +877,7 @@ ALTER TABLE school_district OWNER TO nucleus;
 --
 
 CREATE TABLE standard_framework (
-    code character varying(36) NOT NULL,
+    id character varying(36) NOT NULL,
     display_code character varying(2000) NOT NULL
 );
 
@@ -906,8 +894,8 @@ CREATE TABLE state (
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     creator_id character varying(36),
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
 );
 
 
@@ -918,10 +906,10 @@ ALTER TABLE state OWNER TO nucleus;
 --
 
 CREATE TABLE taxonomy_code (
-    taxonomy_code_id bigint NOT NULL,
+    id bigint NOT NULL,
     creator_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
     display_code character varying(2000) NOT NULL,
     description character varying(5000) NOT NULL,
@@ -930,7 +918,7 @@ CREATE TABLE taxonomy_code (
     sequence_id smallint NOT NULL,
     default_code_id bigint NOT NULL,
     standard_framework_code character varying(36) NOT NULL,
-    code_type code_type NOT NULL,
+    format code_type NOT NULL,
     is_selectable boolean DEFAULT false NOT NULL
 );
 
@@ -955,7 +943,7 @@ ALTER TABLE taxonomy_code_taxonomy_code_id_seq OWNER TO nucleus;
 -- Name: taxonomy_code_taxonomy_code_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: nucleus
 --
 
-ALTER SEQUENCE taxonomy_code_taxonomy_code_id_seq OWNED BY taxonomy_code.taxonomy_code_id;
+ALTER SEQUENCE taxonomy_code_taxonomy_code_id_seq OWNED BY taxonomy_code.id;
 
 
 --
@@ -966,8 +954,8 @@ CREATE TABLE taxonomy_course (
     taxonomy_course_id bigint NOT NULL,
     taxonomy_subject_id bigint NOT NULL,
     creator_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
     display_code character varying(2000) NOT NULL,
     description character varying(5000),
@@ -1008,8 +996,8 @@ ALTER SEQUENCE taxonomy_course_taxonomy_course_id_seq OWNED BY taxonomy_course.t
 CREATE TABLE taxonomy_domain (
     taxonomy_domain_id bigint NOT NULL,
     creator_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
     display_code character varying(2000) NOT NULL,
     description character varying(5000),
@@ -1085,8 +1073,8 @@ CREATE TABLE taxonomy_subdomain (
     taxonomy_course_id bigint NOT NULL,
     taxonomy_domain_id bigint NOT NULL,
     creator_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
     display_code character varying(2000) NOT NULL,
     domain_display_code character varying(2000) NOT NULL,
@@ -1139,13 +1127,13 @@ ALTER SEQUENCE taxonomy_subdomain_taxonomy_subdomain_id_seq OWNED BY taxonomy_su
 CREATE TABLE taxonomy_subject (
     taxonomy_subject_id bigint NOT NULL,
     creator_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
     display_code character varying(2000) NOT NULL,
     description character varying(5000),
     sequence_id smallint NOT NULL,
-    subject_classification subject_classification NOT NULL,
+    subject_classification subject_classification_type NOT NULL,
     default_subject_id bigint NOT NULL,
     standard_framework_code character varying(36) NOT NULL
 );
@@ -1179,10 +1167,10 @@ ALTER SEQUENCE taxonomy_subject_taxonomy_subject_id_seq OWNED BY taxonomy_subjec
 --
 
 CREATE TABLE twenty_one_century_skill (
-    twenty_one_century_skill_id integer NOT NULL,
+    id integer NOT NULL,
     creator_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     key_classification character varying(2000) NOT NULL,
     label character varying(2000) NOT NULL,
     sequence_id smallint NOT NULL,
@@ -1213,7 +1201,7 @@ ALTER TABLE twenty_one_century_skill_twenty_one_century_skill_id_seq OWNER TO nu
 -- Name: twenty_one_century_skill_twenty_one_century_skill_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: nucleus
 --
 
-ALTER SEQUENCE twenty_one_century_skill_twenty_one_century_skill_id_seq OWNED BY twenty_one_century_skill.twenty_one_century_skill_id;
+ALTER SEQUENCE twenty_one_century_skill_twenty_one_century_skill_id_seq OWNED BY twenty_one_century_skill.id;
 
 
 --
@@ -1225,15 +1213,15 @@ CREATE TABLE "user" (
     firstname character varying(100),
     lastname character varying(100),
     parent_user_id character varying(36) NOT NULL,
-    user_category user_category NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    user_category user_category_type NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     modified_by character varying(36) NOT NULL,
     last_login timestamp without time zone,
     birth_date timestamp without time zone,
     grade jsonb,
     thumbnail_path character varying(1000),
-    gender user_gender,
+    gender user_gender_type,
     about_me character varying(5000),
     school_id character varying(36),
     school_district_id character varying(36),
@@ -1281,9 +1269,9 @@ CREATE TABLE user_identity (
     login_type user_identity_type NOT NULL,
     provision_type user_identity_type NOT NULL,
     email_confirm_status boolean DEFAULT false NOT NULL,
-    status user_identity_status NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    status user_identity_status_type NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
 );
 
 
@@ -1317,8 +1305,8 @@ ALTER SEQUENCE user_identity_identity_id_seq OWNED BY user_identity.identity_id;
 CREATE TABLE user_network (
     user_id character varying(36) NOT NULL,
     follow_on_user_id character varying(36) NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     is_deleted boolean DEFAULT false NOT NULL
 );
 
@@ -1332,8 +1320,8 @@ ALTER TABLE user_network OWNER TO nucleus;
 CREATE TABLE user_permission (
     user_id character varying(36) NOT NULL,
     permission jsonb,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
 );
 
 
@@ -1347,8 +1335,8 @@ CREATE TABLE user_preference (
     user_id character varying(36) NOT NULL,
     standard_preference jsonb NOT NULL,
     profile_visiblity boolean DEFAULT false NOT NULL,
-    created timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
 );
 
 
@@ -1379,14 +1367,14 @@ ALTER SEQUENCE user_state_id_seq OWNED BY "user".state_id;
 -- Name: code_id; Type: DEFAULT; Schema: public; Owner: nucleus
 --
 
-ALTER TABLE ONLY code ALTER COLUMN code_id SET DEFAULT nextval('code_code_id_seq'::regclass);
+ALTER TABLE ONLY code ALTER COLUMN id SET DEFAULT nextval('code_code_id_seq'::regclass);
 
 
 --
 -- Name: country_id; Type: DEFAULT; Schema: public; Owner: nucleus
 --
 
-ALTER TABLE ONLY country ALTER COLUMN country_id SET DEFAULT nextval('country_country_id_seq'::regclass);
+ALTER TABLE ONLY country ALTER COLUMN id SET DEFAULT nextval('country_country_id_seq'::regclass);
 
 
 --
@@ -1428,14 +1416,14 @@ ALTER TABLE ONLY default_subject ALTER COLUMN default_subject_id SET DEFAULT nex
 -- Name: metadata_reference_id; Type: DEFAULT; Schema: public; Owner: nucleus
 --
 
-ALTER TABLE ONLY metadata_reference ALTER COLUMN metadata_reference_id SET DEFAULT nextval('metadata_reference_metadata_reference_id_seq'::regclass);
+ALTER TABLE ONLY metadata_reference ALTER COLUMN id SET DEFAULT nextval('metadata_reference_metadata_reference_id_seq'::regclass);
 
 
 --
 -- Name: taxonomy_code_id; Type: DEFAULT; Schema: public; Owner: nucleus
 --
 
-ALTER TABLE ONLY taxonomy_code ALTER COLUMN taxonomy_code_id SET DEFAULT nextval('taxonomy_code_taxonomy_code_id_seq'::regclass);
+ALTER TABLE ONLY taxonomy_code ALTER COLUMN id SET DEFAULT nextval('taxonomy_code_taxonomy_code_id_seq'::regclass);
 
 
 --
@@ -1470,7 +1458,7 @@ ALTER TABLE ONLY taxonomy_subject ALTER COLUMN taxonomy_subject_id SET DEFAULT n
 -- Name: twenty_one_century_skill_id; Type: DEFAULT; Schema: public; Owner: nucleus
 --
 
-ALTER TABLE ONLY twenty_one_century_skill ALTER COLUMN twenty_one_century_skill_id SET DEFAULT nextval('twenty_one_century_skill_twenty_one_century_skill_id_seq'::regclass);
+ALTER TABLE ONLY twenty_one_century_skill ALTER COLUMN id SET DEFAULT nextval('twenty_one_century_skill_twenty_one_century_skill_id_seq'::regclass);
 
 
 --
@@ -1523,7 +1511,7 @@ ALTER TABLE ONLY class_member
 --
 
 ALTER TABLE ONLY class
-    ADD CONSTRAINT class_pkey PRIMARY KEY (class_id);
+    ADD CONSTRAINT class_pkey PRIMARY KEY (id);
 
 
 --
@@ -1531,7 +1519,7 @@ ALTER TABLE ONLY class
 --
 
 ALTER TABLE ONLY code
-    ADD CONSTRAINT code_pkey PRIMARY KEY (code_id);
+    ADD CONSTRAINT code_pkey PRIMARY KEY (id);
 
 
 --
@@ -1539,7 +1527,7 @@ ALTER TABLE ONLY code
 --
 
 ALTER TABLE ONLY collection
-    ADD CONSTRAINT collection_pkey PRIMARY KEY (collection_id);
+    ADD CONSTRAINT collection_pkey PRIMARY KEY (id);
 
 
 --
@@ -1547,7 +1535,7 @@ ALTER TABLE ONLY collection
 --
 
 ALTER TABLE ONLY content
-    ADD CONSTRAINT content_pkey PRIMARY KEY (content_id);
+    ADD CONSTRAINT content_pkey PRIMARY KEY (id);
 
 
 --
@@ -1555,7 +1543,7 @@ ALTER TABLE ONLY content
 --
 
 ALTER TABLE ONLY country
-    ADD CONSTRAINT country_pkey PRIMARY KEY (country_id);
+    ADD CONSTRAINT country_pkey PRIMARY KEY (id);
 
 
 --
@@ -1563,7 +1551,7 @@ ALTER TABLE ONLY country
 --
 
 ALTER TABLE ONLY course
-    ADD CONSTRAINT course_pkey PRIMARY KEY (course_id);
+    ADD CONSTRAINT course_pkey PRIMARY KEY (id);
 
 
 --
@@ -1667,7 +1655,7 @@ ALTER TABLE ONLY google_drive_connect
 --
 
 ALTER TABLE ONLY metadata_reference
-    ADD CONSTRAINT metadata_reference_pkey PRIMARY KEY (metadata_reference_id);
+    ADD CONSTRAINT metadata_reference_pkey PRIMARY KEY (id);
 
 
 --
@@ -1683,7 +1671,7 @@ ALTER TABLE ONLY schema_version
 --
 
 ALTER TABLE ONLY school_district
-    ADD CONSTRAINT school_district_pkey PRIMARY KEY (school_district_id);
+    ADD CONSTRAINT school_district_pkey PRIMARY KEY (id);
 
 
 --
@@ -1691,7 +1679,7 @@ ALTER TABLE ONLY school_district
 --
 
 ALTER TABLE ONLY school
-    ADD CONSTRAINT school_pkey PRIMARY KEY (school_id);
+    ADD CONSTRAINT school_pkey PRIMARY KEY (id);
 
 
 --
@@ -1699,7 +1687,7 @@ ALTER TABLE ONLY school
 --
 
 ALTER TABLE ONLY standard_framework
-    ADD CONSTRAINT standard_framework_pkey PRIMARY KEY (code);
+    ADD CONSTRAINT standard_framework_pkey PRIMARY KEY (id);
 
 
 --
@@ -1723,7 +1711,7 @@ ALTER TABLE ONLY taxonomy_code
 --
 
 ALTER TABLE ONLY taxonomy_code
-    ADD CONSTRAINT taxonomy_code_pkey PRIMARY KEY (taxonomy_code_id);
+    ADD CONSTRAINT taxonomy_code_pkey PRIMARY KEY (id);
 
 
 --
@@ -1795,7 +1783,7 @@ ALTER TABLE ONLY taxonomy_subject
 --
 
 ALTER TABLE ONLY twenty_one_century_skill
-    ADD CONSTRAINT twenty_one_century_skill_pkey PRIMARY KEY (twenty_one_century_skill_id);
+    ADD CONSTRAINT twenty_one_century_skill_pkey PRIMARY KEY (id);
 
 
 --
@@ -1951,7 +1939,7 @@ CREATE INDEX collection_collaborator_gin ON collection USING gin (collaborator j
 -- Name: collection_content_container_type_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
 --
 
-CREATE INDEX collection_content_container_type_idx ON collection USING btree (content_container_type);
+CREATE INDEX collection_content_container_type_idx ON collection USING btree (format);
 
 
 --
@@ -2323,7 +2311,7 @@ CREATE INDEX user_state_id_idx ON "user" USING btree (state_id);
 --
 
 ALTER TABLE ONLY code
-    ADD CONSTRAINT code_standard_framework_code_fkey FOREIGN KEY (standard_framework_code) REFERENCES standard_framework(code);
+    ADD CONSTRAINT code_standard_framework_code_fkey FOREIGN KEY (standard_framework_code) REFERENCES standard_framework(id);
 
 
 --
@@ -2355,7 +2343,7 @@ ALTER TABLE ONLY default_subdomain
 --
 
 ALTER TABLE ONLY default_subject
-    ADD CONSTRAINT default_subject_default_standard_framework_code_fkey FOREIGN KEY (default_standard_framework_code) REFERENCES standard_framework(code);
+    ADD CONSTRAINT default_subject_default_standard_framework_code_fkey FOREIGN KEY (default_standard_framework_code) REFERENCES standard_framework(id);
 
 
 --
@@ -2371,7 +2359,7 @@ ALTER TABLE ONLY taxonomy_code
 --
 
 ALTER TABLE ONLY taxonomy_code
-    ADD CONSTRAINT taxonomy_code_standard_framework_code_fkey FOREIGN KEY (standard_framework_code) REFERENCES standard_framework(code);
+    ADD CONSTRAINT taxonomy_code_standard_framework_code_fkey FOREIGN KEY (standard_framework_code) REFERENCES standard_framework(id);
 
 
 --
@@ -2387,7 +2375,7 @@ ALTER TABLE ONLY taxonomy_course
 --
 
 ALTER TABLE ONLY taxonomy_course
-    ADD CONSTRAINT taxonomy_course_standard_framework_code_fkey FOREIGN KEY (standard_framework_code) REFERENCES standard_framework(code);
+    ADD CONSTRAINT taxonomy_course_standard_framework_code_fkey FOREIGN KEY (standard_framework_code) REFERENCES standard_framework(id);
 
 
 --
@@ -2411,7 +2399,7 @@ ALTER TABLE ONLY taxonomy_domain
 --
 
 ALTER TABLE ONLY taxonomy_domain
-    ADD CONSTRAINT taxonomy_domain_standard_framework_code_fkey FOREIGN KEY (standard_framework_code) REFERENCES standard_framework(code);
+    ADD CONSTRAINT taxonomy_domain_standard_framework_code_fkey FOREIGN KEY (standard_framework_code) REFERENCES standard_framework(id);
 
 
 --
@@ -2459,7 +2447,7 @@ ALTER TABLE ONLY taxonomy_subdomain
 --
 
 ALTER TABLE ONLY taxonomy_subdomain
-    ADD CONSTRAINT taxonomy_subdomain_standard_framework_code_fkey FOREIGN KEY (standard_framework_code) REFERENCES standard_framework(code);
+    ADD CONSTRAINT taxonomy_subdomain_standard_framework_code_fkey FOREIGN KEY (standard_framework_code) REFERENCES standard_framework(id);
 
 
 --
@@ -2491,7 +2479,7 @@ ALTER TABLE ONLY taxonomy_subject
 --
 
 ALTER TABLE ONLY taxonomy_subject
-    ADD CONSTRAINT taxonomy_subject_standard_framework_code_fkey FOREIGN KEY (standard_framework_code) REFERENCES standard_framework(code);
+    ADD CONSTRAINT taxonomy_subject_standard_framework_code_fkey FOREIGN KEY (standard_framework_code) REFERENCES standard_framework(id);
 
 
 --
