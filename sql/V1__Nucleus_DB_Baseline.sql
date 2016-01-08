@@ -177,10 +177,10 @@ ALTER TYPE subject_classification_type OWNER TO nucleus;
 --
 
 CREATE TYPE user_category_type AS ENUM (
-    'Teacher',
-    'Student',
-    'Parent',
-    'Other'
+    'teacher',
+    'student',
+    'parent',
+    'other'
 );
 
 
