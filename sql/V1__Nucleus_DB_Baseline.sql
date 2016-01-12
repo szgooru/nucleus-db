@@ -274,6 +274,7 @@ CREATE TABLE class (
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     creator_id character varying(36) NOT NULL,
+    modifier_id character varying(36) NOT NULL,
     title character varying(5000) NOT NULL,
     description character varying(5000),
     greeting character varying(5000),
@@ -313,7 +314,6 @@ ALTER TABLE class_member OWNER TO nucleus;
 
 CREATE TABLE code (
     id bigint NOT NULL,
-    creator_id character varying(36) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
@@ -361,6 +361,7 @@ CREATE TABLE collection (
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     creator_id character varying(36) NOT NULL,
+    modifier_id character varying(36) NOT NULL,
     original_creator_id character varying(36),
     original_collection_id character varying(36),
     publish_date timestamp without time zone,
@@ -432,7 +433,6 @@ CREATE TABLE country (
     id bigint NOT NULL,
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
-    creator_id character varying(36),
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
 );
@@ -471,6 +471,7 @@ CREATE TABLE course (
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     creator_id character varying(36) NOT NULL,
+    modifier_id character varying(36) NOT NULL,
     original_creator_id character varying(36) NOT NULL,
     original_course_id character varying(36),
     publish_date timestamp without time zone,
@@ -498,6 +499,7 @@ CREATE TABLE course_unit (
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     creator_id character varying(36) NOT NULL,
+    modifier_id character varying(36) NOT NULL,
     original_creator_id character varying(36) NOT NULL,
     original_unit_id character varying(36),
     big_ideas character varying(20000) NOT NULL,
@@ -523,6 +525,7 @@ CREATE TABLE course_unit_lesson (
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     creator_id character varying(36) NOT NULL,
+    modifier_id character varying(36) NOT NULL,
     original_creator_id character varying(36) NOT NULL,
     original_lesson_id character varying(36),
     metadata jsonb,
@@ -556,7 +559,6 @@ ALTER TABLE course_unit_lesson_collection OWNER TO nucleus;
 
 CREATE TABLE default_code (
     default_code_id bigint NOT NULL,
-    creator_id character varying(36) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
@@ -600,7 +602,6 @@ ALTER SEQUENCE default_code_default_code_id_seq OWNED BY default_code.default_co
 CREATE TABLE default_course (
     default_course_id bigint NOT NULL,
     default_subject_id bigint NOT NULL,
-    creator_id character varying(36) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
@@ -641,7 +642,6 @@ ALTER SEQUENCE default_course_default_course_id_seq OWNED BY default_course.defa
 
 CREATE TABLE default_domain (
     default_domain_id bigint NOT NULL,
-    creator_id character varying(36) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
@@ -683,7 +683,6 @@ CREATE TABLE default_subdomain (
     default_subdomain_id bigint NOT NULL,
     default_course_id bigint NOT NULL,
     default_domain_id bigint NOT NULL,
-    creator_id character varying(36) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
@@ -736,7 +735,6 @@ ALTER SEQUENCE default_subdomain_default_subdomain_id_seq OWNED BY default_subdo
 
 CREATE TABLE default_subject (
     default_subject_id bigint NOT NULL,
-    creator_id character varying(36) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
@@ -794,7 +792,6 @@ ALTER TABLE google_drive_connect OWNER TO nucleus;
 
 CREATE TABLE metadata_reference (
     id integer NOT NULL,
-    creator_id character varying(36) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     format metadata_reference_type NOT NULL,
@@ -827,27 +824,6 @@ ALTER SEQUENCE metadata_reference_metadata_reference_id_seq OWNED BY metadata_re
 
 
 --
--- Name: schema_version; Type: TABLE; Schema: public; Owner: nucleus; Tablespace: 
---
-
-CREATE TABLE schema_version (
-    version_rank integer NOT NULL,
-    installed_rank integer NOT NULL,
-    version character varying(50) NOT NULL,
-    description character varying(200) NOT NULL,
-    type character varying(20) NOT NULL,
-    script character varying(1000) NOT NULL,
-    checksum integer,
-    installed_by character varying(100) NOT NULL,
-    installed_on timestamp without time zone DEFAULT now() NOT NULL,
-    execution_time integer NOT NULL,
-    success boolean NOT NULL
-);
-
-
-ALTER TABLE schema_version OWNER TO nucleus;
-
---
 -- Name: school; Type: TABLE; Schema: public; Owner: nucleus; Tablespace: 
 --
 
@@ -856,7 +832,6 @@ CREATE TABLE school (
     school_district_id character varying(36),
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
-    creator_id character varying(36),
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
 );
@@ -872,7 +847,6 @@ CREATE TABLE school_district (
     id character varying(36) NOT NULL,
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
-    creator_id character varying(36),
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
 );
@@ -901,7 +875,6 @@ CREATE TABLE state (
     country_id bigint NOT NULL,
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
-    creator_id character varying(36),
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
 );
@@ -915,7 +888,6 @@ ALTER TABLE state OWNER TO nucleus;
 
 CREATE TABLE taxonomy_code (
     id bigint NOT NULL,
-    creator_id character varying(36) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
@@ -961,7 +933,6 @@ ALTER SEQUENCE taxonomy_code_taxonomy_code_id_seq OWNED BY taxonomy_code.id;
 CREATE TABLE taxonomy_course (
     taxonomy_course_id bigint NOT NULL,
     taxonomy_subject_id bigint NOT NULL,
-    creator_id character varying(36) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
@@ -1003,7 +974,6 @@ ALTER SEQUENCE taxonomy_course_taxonomy_course_id_seq OWNED BY taxonomy_course.t
 
 CREATE TABLE taxonomy_domain (
     taxonomy_domain_id bigint NOT NULL,
-    creator_id character varying(36) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
@@ -1080,7 +1050,6 @@ CREATE TABLE taxonomy_subdomain (
     taxonomy_subdomain_id bigint NOT NULL,
     taxonomy_course_id bigint NOT NULL,
     taxonomy_domain_id bigint NOT NULL,
-    creator_id character varying(36) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
@@ -1134,7 +1103,6 @@ ALTER SEQUENCE taxonomy_subdomain_taxonomy_subdomain_id_seq OWNED BY taxonomy_su
 
 CREATE TABLE taxonomy_subject (
     taxonomy_subject_id bigint NOT NULL,
-    creator_id character varying(36) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     code character varying(2000) NOT NULL,
@@ -1176,7 +1144,6 @@ ALTER SEQUENCE taxonomy_subject_taxonomy_subject_id_seq OWNED BY taxonomy_subjec
 
 CREATE TABLE twenty_one_century_skill (
     id integer NOT NULL,
-    creator_id character varying(36) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     key_classification character varying(2000) NOT NULL,
@@ -1224,7 +1191,6 @@ CREATE TABLE user_demographic (
     user_category user_category_type NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    modified_by character varying(36) NOT NULL,
     last_login timestamp without time zone,
     birth_date timestamp without time zone,
     grade jsonb,
@@ -1612,14 +1578,6 @@ ALTER TABLE ONLY metadata_reference
 
 
 --
--- Name: schema_version_pk; Type: CONSTRAINT; Schema: public; Owner: nucleus; Tablespace: 
---
-
-ALTER TABLE ONLY schema_version
-    ADD CONSTRAINT schema_version_pk PRIMARY KEY (version);
-
-
---
 -- Name: school_district_pkey; Type: CONSTRAINT; Schema: public; Owner: nucleus; Tablespace: 
 --
 
@@ -1959,13 +1917,6 @@ CREATE INDEX content_title_idx ON content USING btree (title);
 
 
 --
--- Name: country_creator_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
---
-
-CREATE INDEX country_creator_id_idx ON country USING btree (creator_id);
-
-
---
 -- Name: course_class_list_gin; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
 --
 
@@ -2054,55 +2005,6 @@ CREATE INDEX default_course_default_subject_id_idx ON default_course USING btree
 --
 
 CREATE INDEX default_subdomain_course_id_domain_id_idx ON default_subdomain USING btree (default_course_id, default_domain_id);
-
-
---
--- Name: schema_version_ir_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
---
-
-CREATE INDEX schema_version_ir_idx ON schema_version USING btree (installed_rank);
-
-
---
--- Name: schema_version_s_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
---
-
-CREATE INDEX schema_version_s_idx ON schema_version USING btree (success);
-
-
---
--- Name: schema_version_vr_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
---
-
-CREATE INDEX schema_version_vr_idx ON schema_version USING btree (version_rank);
-
-
---
--- Name: school_creator_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
---
-
-CREATE INDEX school_creator_id_idx ON school USING btree (creator_id);
-
-
---
--- Name: school_district_creator_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
---
-
-CREATE INDEX school_district_creator_id_idx ON school_district USING btree (creator_id);
-
-
---
--- Name: school_district_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
---
-
-CREATE INDEX school_district_id_idx ON school USING btree (school_district_id);
-
-
---
--- Name: state_creator_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
---
-
-CREATE INDEX state_creator_id_idx ON state USING btree (creator_id);
 
 
 --
