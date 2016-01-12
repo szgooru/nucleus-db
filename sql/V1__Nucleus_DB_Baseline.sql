@@ -177,10 +177,10 @@ ALTER TYPE subject_classification_type OWNER TO nucleus;
 --
 
 CREATE TYPE user_category_type AS ENUM (
-    'Teacher',
-    'Student',
-    'Parent',
-    'Other'
+    'teacher',
+    'student',
+    'parent',
+    'other'
 );
 
 
@@ -217,7 +217,7 @@ ALTER TYPE user_identity_status_type OWNER TO nucleus;
 -- Name: user_identity_type; Type: TYPE; Schema: public; Owner: nucleus
 --
 
-CREATE TYPE user_identity_type AS ENUM (
+CREATE TYPE user_identity_login_type AS ENUM (
     'google',
     'wsfed',
     'saml',
@@ -225,7 +225,19 @@ CREATE TYPE user_identity_type AS ENUM (
 );
 
 
-ALTER TYPE user_identity_type OWNER TO nucleus;
+ALTER TYPE user_identity_login_type OWNER TO nucleus;
+
+
+CREATE TYPE user_identity_provision_type AS ENUM (
+    'google',
+    'wsfed',
+    'saml',
+    'registered'
+);
+
+
+ALTER TYPE user_identity_provision_type OWNER TO nucleus;
+
 
 SET default_tablespace = '';
 
@@ -246,7 +258,8 @@ CREATE TABLE auth_client (
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     grant_types jsonb NOT NULL,
-    referer_domains jsonb
+    referer_domains jsonb,
+    cdn_urls jsonb NOT NULL
 );
 
 
@@ -1203,11 +1216,11 @@ ALTER SEQUENCE twenty_one_century_skill_twenty_one_century_skill_id_seq OWNED BY
 -- Name: user; Type: TABLE; Schema: public; Owner: nucleus; Tablespace: 
 --
 
-CREATE TABLE "user" (
-    user_id character varying(36) NOT NULL,
+CREATE TABLE user_demographic (
+    id character varying(36) NOT NULL,
     firstname character varying(100),
     lastname character varying(100),
-    parent_user_id character varying(36) NOT NULL,
+    parent_user_id character varying(36),
     user_category user_category_type NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
@@ -1215,54 +1228,34 @@ CREATE TABLE "user" (
     last_login timestamp without time zone,
     birth_date timestamp without time zone,
     grade jsonb,
+    course jsonb,
     thumbnail_path character varying(1000),
     gender user_gender_type,
     about_me character varying(5000),
     school_id character varying(36),
     school_district_id character varying(36),
-    email character varying(256),
-    country_id bigint NOT NULL,
-    state_id bigint NOT NULL
+    email_id character varying(256),
+    country_id bigint,
+    state_id bigint
 );
 
 
-ALTER TABLE "user" OWNER TO nucleus;
-
---
--- Name: user_country_id_seq; Type: SEQUENCE; Schema: public; Owner: nucleus
---
-
-CREATE SEQUENCE user_country_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE user_country_id_seq OWNER TO nucleus;
-
---
--- Name: user_country_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: nucleus
---
-
-ALTER SEQUENCE user_country_id_seq OWNED BY "user".country_id;
-
+ALTER TABLE user_demographic OWNER TO nucleus;
 
 --
 -- Name: user_identity; Type: TABLE; Schema: public; Owner: nucleus; Tablespace: 
 --
 
 CREATE TABLE user_identity (
-    identity_id bigint NOT NULL,
+    id bigint NOT NULL,
     user_id character varying(36) NOT NULL,
     username character varying(32) NOT NULL,
     reference_id character varying(100),
     email_id character varying(256),
     password character varying(64),
     client_id character varying(36) NOT NULL,
-    login_type user_identity_type NOT NULL,
-    provision_type user_identity_type NOT NULL,
+    login_type user_identity_login_type NOT NULL,
+    provision_type user_identity_provision_type NOT NULL,
     email_confirm_status boolean DEFAULT false NOT NULL,
     status user_identity_status_type NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
@@ -1273,10 +1266,10 @@ CREATE TABLE user_identity (
 ALTER TABLE user_identity OWNER TO nucleus;
 
 --
--- Name: user_identity_identity_id_seq; Type: SEQUENCE; Schema: public; Owner: nucleus
+-- Name: user_identity_id_seq; Type: SEQUENCE; Schema: public; Owner: nucleus
 --
 
-CREATE SEQUENCE user_identity_identity_id_seq
+CREATE SEQUENCE user_identity_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1284,13 +1277,13 @@ CREATE SEQUENCE user_identity_identity_id_seq
     CACHE 1;
 
 
-ALTER TABLE user_identity_identity_id_seq OWNER TO nucleus;
+ALTER TABLE user_identity_id_seq OWNER TO nucleus;
 
 --
--- Name: user_identity_identity_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: nucleus
+-- Name: user_identity_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: nucleus
 --
 
-ALTER SEQUENCE user_identity_identity_id_seq OWNED BY user_identity.identity_id;
+ALTER SEQUENCE user_identity_id_seq OWNED BY user_identity.id;
 
 
 --
@@ -1336,27 +1329,6 @@ CREATE TABLE user_preference (
 
 
 ALTER TABLE user_preference OWNER TO nucleus;
-
---
--- Name: user_state_id_seq; Type: SEQUENCE; Schema: public; Owner: nucleus
---
-
-CREATE SEQUENCE user_state_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE user_state_id_seq OWNER TO nucleus;
-
---
--- Name: user_state_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: nucleus
---
-
-ALTER SEQUENCE user_state_id_seq OWNED BY "user".state_id;
-
 
 --
 -- Name: code_id; Type: DEFAULT; Schema: public; Owner: nucleus
@@ -1457,24 +1429,10 @@ ALTER TABLE ONLY twenty_one_century_skill ALTER COLUMN id SET DEFAULT nextval('t
 
 
 --
--- Name: country_id; Type: DEFAULT; Schema: public; Owner: nucleus
---
-
-ALTER TABLE ONLY "user" ALTER COLUMN country_id SET DEFAULT nextval('user_country_id_seq'::regclass);
-
-
---
--- Name: state_id; Type: DEFAULT; Schema: public; Owner: nucleus
---
-
-ALTER TABLE ONLY "user" ALTER COLUMN state_id SET DEFAULT nextval('user_state_id_seq'::regclass);
-
-
---
 -- Name: identity_id; Type: DEFAULT; Schema: public; Owner: nucleus
 --
 
-ALTER TABLE ONLY user_identity ALTER COLUMN identity_id SET DEFAULT nextval('user_identity_identity_id_seq'::regclass);
+ALTER TABLE ONLY user_identity ALTER COLUMN id SET DEFAULT nextval('user_identity_id_seq'::regclass);
 
 
 --
@@ -1785,8 +1743,8 @@ ALTER TABLE ONLY twenty_one_century_skill
 -- Name: user_email_key; Type: CONSTRAINT; Schema: public; Owner: nucleus; Tablespace: 
 --
 
-ALTER TABLE ONLY "user"
-    ADD CONSTRAINT user_email_key UNIQUE (email);
+ALTER TABLE ONLY user_demographic
+    ADD CONSTRAINT user_email_key UNIQUE (email_id);
 
 
 --
@@ -1802,7 +1760,7 @@ ALTER TABLE ONLY user_identity
 --
 
 ALTER TABLE ONLY user_identity
-    ADD CONSTRAINT user_identity_pkey PRIMARY KEY (identity_id);
+    ADD CONSTRAINT user_identity_pkey PRIMARY KEY (id);
 
 
 --
@@ -1841,8 +1799,8 @@ ALTER TABLE ONLY user_permission
 -- Name: user_pkey; Type: CONSTRAINT; Schema: public; Owner: nucleus; Tablespace: 
 --
 
-ALTER TABLE ONLY "user"
-    ADD CONSTRAINT user_pkey PRIMARY KEY (user_id);
+ALTER TABLE ONLY user_demographic
+    ADD CONSTRAINT user_pkey PRIMARY KEY (id);
 
 
 --
@@ -2221,21 +2179,21 @@ CREATE INDEX taxonomy_subject_standard_framework_code_idx ON taxonomy_subject US
 -- Name: user_category_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
 --
 
-CREATE INDEX user_category_id_idx ON "user" USING btree (user_category);
+CREATE INDEX user_demographic_category_id_idx ON user_demographic USING btree (user_category);
 
 
 --
 -- Name: user_country_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
 --
 
-CREATE INDEX user_country_id_idx ON "user" USING btree (country_id);
+CREATE INDEX user_demographic_country_id_idx ON user_demographic USING btree (country_id);
 
 
 --
 -- Name: user_grade_gin; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
 --
 
-CREATE INDEX user_grade_gin ON "user" USING gin (grade jsonb_path_ops);
+CREATE INDEX user_demographic_grade_gin ON user_demographic USING gin (grade jsonb_path_ops);
 
 
 --
@@ -2277,28 +2235,28 @@ CREATE INDEX user_identity_user_id_idx ON user_identity USING btree (user_id);
 -- Name: user_parent_user_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
 --
 
-CREATE INDEX user_parent_user_id_idx ON "user" USING btree (parent_user_id);
+CREATE INDEX user_parent_user_id_idx ON user_demographic USING btree (parent_user_id);
 
 
 --
 -- Name: user_school_district_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
 --
 
-CREATE INDEX user_school_district_id_idx ON "user" USING btree (school_district_id);
+CREATE INDEX user_school_district_id_idx ON user_demographic USING btree (school_district_id);
 
 
 --
 -- Name: user_school_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
 --
 
-CREATE INDEX user_school_id_idx ON "user" USING btree (school_id);
+CREATE INDEX user_school_id_idx ON user_demographic USING btree (school_id);
 
 
 --
 -- Name: user_state_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
 --
 
-CREATE INDEX user_state_id_idx ON "user" USING btree (state_id);
+CREATE INDEX user_state_id_idx ON user_demographic USING btree (state_id);
 
 
 --
