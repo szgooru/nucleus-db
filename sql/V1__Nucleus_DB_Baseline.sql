@@ -1608,6 +1608,8 @@ ALTER TABLE ONLY standard_framework
 ALTER TABLE ONLY state
     ADD CONSTRAINT state_pkey PRIMARY KEY (id);
 
+CREATE INDEX state_country_id_idx ON state USING btree (country_id);
+
 
 --
 -- Name: taxonomy_code_code_key; Type: CONSTRAINT; Schema: public; Owner: nucleus; Tablespace: 
