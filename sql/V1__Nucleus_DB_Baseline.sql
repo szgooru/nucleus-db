@@ -434,7 +434,8 @@ CREATE TABLE country (
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    creator_id character varying(36)
 );
 
 
@@ -833,7 +834,8 @@ CREATE TABLE school (
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    creator_id character varying(36)
 );
 
 
@@ -848,7 +850,8 @@ CREATE TABLE school_district (
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    creator_id character varying(36)
 );
 
 
@@ -876,7 +879,8 @@ CREATE TABLE state (
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    creator_id character varying(36)
 );
 
 
