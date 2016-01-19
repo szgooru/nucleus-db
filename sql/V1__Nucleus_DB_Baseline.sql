@@ -1964,6 +1964,12 @@ CREATE INDEX course_unit_course_id_idx ON course_unit USING btree (course_id);
 
 CREATE INDEX course_unit_lesson_collection_cul_id_idx ON course_unit_lesson_collection USING btree (course_id, unit_id, lesson_id);
 
+--
+-- Name: course_unit_lesson_collection_coll_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
+--
+
+CREATE INDEX course_unit_lesson_collection_coll_id_idx ON course_unit_lesson_collection USING btree (collection_id);
+
 
 --
 -- Name: course_unit_lesson_course_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
