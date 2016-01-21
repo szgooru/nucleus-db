@@ -1201,7 +1201,7 @@ CREATE TABLE user_demographic (
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     last_login timestamp without time zone,
-    birth_date timestamp without time zone,
+    birth_date date,
     grade jsonb,
     course jsonb,
     thumbnail_path character varying(1000),
