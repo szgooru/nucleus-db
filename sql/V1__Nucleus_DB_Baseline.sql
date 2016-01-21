@@ -360,6 +360,7 @@ CREATE TABLE collection (
     title character varying(5000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    owner_id character varying(36) NOT NULL,
     creator_id character varying(36) NOT NULL,
     modifier_id character varying(36) NOT NULL,
     original_creator_id character varying(36),
@@ -407,7 +408,7 @@ CREATE TABLE content (
     metadata jsonb,
     taxonomy jsonb,
     depth_of_knowledge jsonb,
-    hint_explanation_detail character varying(20000),
+    hint_explanation_detail jsonb,
     thumbnail character varying(2000),
     course_id character varying(36),
     unit_id character varying(36),
@@ -416,6 +417,7 @@ CREATE TABLE content (
     sequence_id smallint,
     is_copyright_owner boolean,
     copyright_owner jsonb,
+    info jsonb,
     visible_on_profile boolean DEFAULT false NOT NULL,
     is_frame_breaker boolean DEFAULT false,
     is_broken boolean DEFAULT false,
@@ -471,6 +473,7 @@ CREATE TABLE course (
     title character varying(5000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    owner_id character varying(36) NOT NULL,
     creator_id character varying(36) NOT NULL,
     modifier_id character varying(36) NOT NULL,
     original_creator_id character varying(36) NOT NULL,
@@ -499,6 +502,7 @@ CREATE TABLE course_unit (
     title character varying(5000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    owner_id character varying(36) NOT NULL,
     creator_id character varying(36) NOT NULL,
     modifier_id character varying(36) NOT NULL,
     original_creator_id character varying(36) NOT NULL,
@@ -525,6 +529,7 @@ CREATE TABLE course_unit_lesson (
     title character varying(5000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    owner_id character varying(36) NOT NULL,
     creator_id character varying(36) NOT NULL,
     modifier_id character varying(36) NOT NULL,
     original_creator_id character varying(36) NOT NULL,
@@ -1860,10 +1865,10 @@ CREATE INDEX collection_content_container_type_idx ON collection USING btree (fo
 
 
 --
--- Name: collection_creator_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
+-- Name: collection_owner_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
 --
 
-CREATE INDEX collection_creator_id_idx ON collection USING btree (creator_id);
+CREATE INDEX collection_owner_id_idx ON collection USING btree (owner_id);
 
 
 --
@@ -1937,10 +1942,10 @@ CREATE INDEX course_collaborator_gin ON course USING gin (collaborator jsonb_pat
 
 
 --
--- Name: course_creator_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
+-- Name: course_owner_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
 --
 
-CREATE INDEX course_creator_id_idx ON course USING btree (creator_id);
+CREATE INDEX course_owner_id_idx ON course USING btree (owner_id);
 
 
 --
