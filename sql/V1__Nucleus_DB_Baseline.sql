@@ -434,7 +434,8 @@ CREATE TABLE country (
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    creator_id character varying(36)
 );
 
 
@@ -833,7 +834,8 @@ CREATE TABLE school (
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    creator_id character varying(36)
 );
 
 
@@ -848,7 +850,8 @@ CREATE TABLE school_district (
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    creator_id character varying(36)
 );
 
 
@@ -871,12 +874,13 @@ ALTER TABLE standard_framework OWNER TO nucleus;
 --
 
 CREATE TABLE state (
-    state_id bigint NOT NULL,
-    country_id bigint NOT NULL,
+    id bigserial NOT NULL,
+    country_id bigint  NULL,
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
+    creator_id character varying(36)
 );
 
 
@@ -1188,7 +1192,7 @@ CREATE TABLE user_demographic (
     firstname character varying(100),
     lastname character varying(100),
     parent_user_id character varying(36),
-    user_category user_category_type NOT NULL,
+    user_category user_category_type  NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     last_login timestamp without time zone,
@@ -1606,7 +1610,9 @@ ALTER TABLE ONLY standard_framework
 --
 
 ALTER TABLE ONLY state
-    ADD CONSTRAINT state_pkey PRIMARY KEY (state_id, country_id);
+    ADD CONSTRAINT state_pkey PRIMARY KEY (id);
+
+CREATE INDEX state_country_id_idx ON state USING btree (country_id);
 
 
 --
