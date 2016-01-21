@@ -419,8 +419,8 @@ CREATE TABLE content (
     copyright_owner jsonb,
     info jsonb,
     visible_on_profile boolean DEFAULT false NOT NULL,
-    is_frame_breaker boolean DEFAULT false,
-    is_broken boolean DEFAULT false,
+    display_guide jsonb,
+    accessibility jsonb,
     is_deleted boolean DEFAULT false NOT NULL
 );
 
@@ -1158,10 +1158,10 @@ CREATE TABLE twenty_one_century_skill (
     key_classification character varying(2000) NOT NULL,
     label character varying(2000) NOT NULL,
     sequence_id smallint NOT NULL,
-    hewlett_deep_learning_model character varying(2000),
-    conley_four_keys_model character varying(2000),
-    p21_framework_model character varying(2000),
-    national_research_center_model character varying(2000)
+    hewlett_deep_learning_model boolean DEFAULT false NOT NULL,
+    conley_four_keys_model boolean DEFAULT false NOT NULL,
+    p21_framework_model boolean DEFAULT false NOT NULL,
+    national_research_center_model boolean DEFAULT false NOT NULL
 );
 
 

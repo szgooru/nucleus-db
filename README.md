@@ -35,5 +35,10 @@ The version number needs to be incremented each time we want to make changes to 
 3. Except for taxonomy and probably user area, all the primary keys if they are individual columns should be named as id
 4. The time stamps column should be named as created_at and updated_at
 
+## 6. Trivia information
+1. The content#info will contain all the fields which describe resoure but don't fit anywhere else
+2. The content#is_broken, content#is_frame_breaker are removed and they should be now part of content#display_guide
+3. The static lookup for "access hazards" and "media features" will consititue content#accessibility
+4. All authorizations are based on collaborators and owners. The creators and modifiers are just for book keeping
 
 
