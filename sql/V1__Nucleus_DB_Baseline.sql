@@ -357,6 +357,9 @@ ALTER SEQUENCE code_code_id_seq OWNED BY code.id;
 
 CREATE TABLE collection (
     id character varying(36) NOT NULL,
+    course_id character varying(36) NOT NULL,
+    unit_id character varying(36) NOT NULL,
+    lesson_id character varying(36) NOT NULL,
     title character varying(5000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
@@ -542,22 +545,6 @@ CREATE TABLE course_unit_lesson (
 
 
 ALTER TABLE course_unit_lesson OWNER TO nucleus;
-
---
--- Name: course_unit_lesson_collection; Type: TABLE; Schema: public; Owner: nucleus; Tablespace: 
---
-
-CREATE TABLE course_unit_lesson_collection (
-    course_id character varying(36) NOT NULL,
-    unit_id character varying(36) NOT NULL,
-    lesson_id character varying(36) NOT NULL,
-    collection_id character varying(36) NOT NULL,
-    sequence_id smallint NOT NULL,
-    is_deleted boolean DEFAULT false NOT NULL
-);
-
-
-ALTER TABLE course_unit_lesson_collection OWNER TO nucleus;
 
 --
 -- Name: default_code; Type: TABLE; Schema: public; Owner: nucleus; Tablespace: 
@@ -1483,14 +1470,6 @@ ALTER TABLE ONLY course
 
 
 --
--- Name: course_unit_lesson_collection_pkey; Type: CONSTRAINT; Schema: public; Owner: nucleus; Tablespace: 
---
-
-ALTER TABLE ONLY course_unit_lesson_collection
-    ADD CONSTRAINT course_unit_lesson_collection_pkey PRIMARY KEY (course_id, unit_id, lesson_id, collection_id);
-
-
---
 -- Name: course_unit_lesson_pkey; Type: CONSTRAINT; Schema: public; Owner: nucleus; Tablespace: 
 --
 
@@ -1961,25 +1940,35 @@ CREATE INDEX course_original_creator_id_idx ON course USING btree (original_crea
 
 CREATE INDEX course_title_idx ON course USING btree (title);
 
-
 --
 -- Name: course_unit_course_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
 --
 
 CREATE INDEX course_unit_course_id_idx ON course_unit USING btree (course_id);
 
-
 --
--- Name: course_unit_lesson_collection_cul_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
---
-
-CREATE INDEX course_unit_lesson_collection_cul_id_idx ON course_unit_lesson_collection USING btree (course_id, unit_id, lesson_id);
-
---
--- Name: course_unit_lesson_collection_coll_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
+-- Name: collection_cul_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
 --
 
-CREATE INDEX course_unit_lesson_collection_coll_id_idx ON course_unit_lesson_collection USING btree (collection_id);
+CREATE INDEX collection_cul_idx ON collection USING btree (course_id, unit_id, lesson_id);
+
+--
+-- Name: collection_c_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
+--
+
+CREATE INDEX collection_c_idx ON collection USING btree (course_id);
+
+--
+-- Name: collection_cu_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
+--
+
+CREATE INDEX collection_cu_idx ON collection USING btree (course_id, unit_id);
+
+--
+-- Name: collection_culc_id_idx; Type: INDEX; Schema: public; Owner: nucleus; Tablespace: 
+--
+
+CREATE INDEX collection_culc_id_idx ON collection USING btree (course_id, unit_id, lesson_id, id);
 
 
 --
