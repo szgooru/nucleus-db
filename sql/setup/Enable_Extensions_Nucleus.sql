@@ -6,4 +6,4 @@
 -- DROP EXTENSION "pgcrypto";
 
 
-CREATE EXTENSION "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
