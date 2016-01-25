@@ -368,6 +368,7 @@ CREATE TABLE collection (
     modifier_id uuid NOT NULL,
     original_creator_id uuid,
     original_collection_id uuid,
+    sequence_id smallint NOT NULL,
     publish_date timestamp without time zone,
     format content_container_type NOT NULL,
     thumbnail character varying(2000),
