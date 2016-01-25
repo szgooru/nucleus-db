@@ -248,7 +248,7 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE auth_client (
-    client_id character varying(36) NOT NULL,
+    client_id uuid NOT NULL DEFAULT gen_random_uuid(),
     name character varying(256) NOT NULL,
     url character varying(2000),
     client_key character varying(64) NOT NULL,
@@ -436,37 +436,13 @@ ALTER TABLE content OWNER TO nucleus;
 --
 
 CREATE TABLE country (
-    id bigint NOT NULL,
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    creator_id character varying(36)
+    creator_id uuid
 );
-
-
-ALTER TABLE country OWNER TO nucleus;
-
---
--- Name: country_country_id_seq; Type: SEQUENCE; Schema: public; Owner: nucleus
---
-
-CREATE SEQUENCE country_country_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE country_country_id_seq OWNER TO nucleus;
-
---
--- Name: country_country_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: nucleus
---
-
-ALTER SEQUENCE country_country_id_seq OWNED BY country.id;
-
 
 --
 -- Name: course; Type: TABLE; Schema: public; Owner: nucleus; Tablespace: 
@@ -770,7 +746,7 @@ ALTER SEQUENCE default_subject_default_subject_id_seq OWNED BY default_subject.d
 --
 
 CREATE TABLE google_drive_connect (
-    user_id character varying(36) NOT NULL,
+    user_id uuid NOT NULL,
     connected_email_id character varying(256) NOT NULL,
     refresh_token character varying(2000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
@@ -822,13 +798,13 @@ ALTER SEQUENCE metadata_reference_metadata_reference_id_seq OWNED BY metadata_re
 --
 
 CREATE TABLE school (
-    id character varying(36) NOT NULL,
-    school_district_id character varying(36),
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    school_district_id uuid,
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    creator_id character varying(36)
+    creator_id uuid
 );
 
 
@@ -839,13 +815,13 @@ ALTER TABLE school OWNER TO nucleus;
 --
 
 CREATE TABLE school_district (
-    id character varying(36) NOT NULL,
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    creator_id character varying(36),
-    user_id character varying(36)
+    creator_id uuid,
+    profile_user_id uuid
 );
 
 
@@ -868,13 +844,13 @@ ALTER TABLE standard_framework OWNER TO nucleus;
 --
 
 CREATE TABLE state (
-    id bigserial NOT NULL,
-    country_id bigint  NULL,
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    country_id uuid  NULL,
     name character varying(2000) NOT NULL,
     code character varying(1000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    creator_id character varying(36)
+    creator_id uuid
 );
 
 
@@ -1182,10 +1158,10 @@ ALTER SEQUENCE twenty_one_century_skill_twenty_one_century_skill_id_seq OWNED BY
 --
 
 CREATE TABLE user_demographic (
-    id character varying(36) NOT NULL,
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
     firstname character varying(100),
     lastname character varying(100),
-    parent_user_id character varying(36),
+    parent_user_id uuid,
     user_category user_category_type  NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
@@ -1196,11 +1172,11 @@ CREATE TABLE user_demographic (
     thumbnail_path character varying(1000),
     gender user_gender_type,
     about_me character varying(5000),
-    school_id character varying(36),
-    school_district_id character varying(36),
+    school_id uuid,
+    school_district_id uuid,
     email_id character varying(256),
-    country_id bigint,
-    state_id bigint,
+    country_id uuid,
+    state_id uuid,
     metadata jsonb
 );
 
@@ -1213,12 +1189,12 @@ ALTER TABLE user_demographic OWNER TO nucleus;
 
 CREATE TABLE user_identity (
     id bigint NOT NULL,
-    user_id character varying(36) NOT NULL,
+    user_id uuid NOT NULL,
     username character varying(32) NOT NULL,
     reference_id character varying(100),
     email_id character varying(256),
     password character varying(64),
-    client_id character varying(36) NOT NULL,
+    client_id uuid NOT NULL,
     login_type user_identity_login_type NOT NULL,
     provision_type user_identity_provision_type NOT NULL,
     email_confirm_status boolean DEFAULT false NOT NULL,
@@ -1256,8 +1232,8 @@ ALTER SEQUENCE user_identity_id_seq OWNED BY user_identity.id;
 --
 
 CREATE TABLE user_network (
-    user_id character varying(36) NOT NULL,
-    follow_on_user_id character varying(36) NOT NULL,
+    user_id uuid NOT NULL,
+    follow_on_user_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     is_deleted boolean DEFAULT false NOT NULL
@@ -1271,7 +1247,7 @@ ALTER TABLE user_network OWNER TO nucleus;
 --
 
 CREATE TABLE user_permission (
-    user_id character varying(36) NOT NULL,
+    user_id uuid NOT NULL,
     permission jsonb,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
@@ -1285,7 +1261,7 @@ ALTER TABLE user_permission OWNER TO nucleus;
 --
 
 CREATE TABLE user_preference (
-    user_id character varying(36) NOT NULL,
+    user_id uuid NOT NULL,
     standard_preference jsonb NOT NULL,
     profile_visiblity boolean DEFAULT false NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
@@ -1300,13 +1276,6 @@ ALTER TABLE user_preference OWNER TO nucleus;
 --
 
 ALTER TABLE ONLY code ALTER COLUMN id SET DEFAULT nextval('code_code_id_seq'::regclass);
-
-
---
--- Name: country_id; Type: DEFAULT; Schema: public; Owner: nucleus
---
-
-ALTER TABLE ONLY country ALTER COLUMN id SET DEFAULT nextval('country_country_id_seq'::regclass);
 
 
 --
