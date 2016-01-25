@@ -16,4 +16,4 @@ CREATE DATABASE nucleus
        LC_CTYPE = 'C'
        TEMPLATE template0;
 
-
+CREATE EXTENSION "pgcrypto";
