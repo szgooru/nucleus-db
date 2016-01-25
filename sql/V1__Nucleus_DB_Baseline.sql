@@ -843,7 +843,8 @@ CREATE TABLE school_district (
     code character varying(1000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    creator_id character varying(36)
+    creator_id character varying(36),
+    user_id character varying(36)
 );
 
 
@@ -1198,7 +1199,8 @@ CREATE TABLE user_demographic (
     school_district_id character varying(36),
     email_id character varying(256),
     country_id bigint,
-    state_id bigint
+    state_id bigint,
+    metadata jsonb
 );
 
 
