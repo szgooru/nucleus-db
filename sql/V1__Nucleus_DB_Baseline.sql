@@ -270,21 +270,21 @@ ALTER TABLE auth_client OWNER TO nucleus;
 --
 
 CREATE TABLE class (
-    id character varying(36) NOT NULL,
+    id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    creator_id character varying(36) NOT NULL,
-    modifier_id character varying(36) NOT NULL,
+    creator_id uuid NOT NULL,
+    modifier_id uuid NOT NULL,
     title character varying(5000) NOT NULL,
     description character varying(5000),
     greeting character varying(5000),
     grade character varying(5000) NOT NULL,
     class_sharing class_sharing_type NOT NULL,
     cover_image character varying(2000),
-    code character varying(36) NOT NULL,
+    code uuid NOT NULL,
     min_score smallint NOT NULL,
     end_time timestamp without time zone,
-    course_id character varying(36),
+    course_id uuid,
     is_deleted boolean DEFAULT false NOT NULL,
     collaborator jsonb,
     is_archived boolean DEFAULT false NOT NULL
@@ -298,8 +298,8 @@ ALTER TABLE class OWNER TO nucleus;
 --
 
 CREATE TABLE class_member (
-    class_id character varying(36) NOT NULL,
-    user_id character varying(36) NOT NULL,
+    class_id uuid NOT NULL,
+    user_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     class_member_status class_member_status_type NOT NULL
@@ -322,7 +322,7 @@ CREATE TABLE code (
     parent_code_id bigint,
     root_code_id bigint,
     sequence_id smallint NOT NULL,
-    standard_framework_code character varying(36) NOT NULL,
+    standard_framework_code uuid NOT NULL,
     type code_type NOT NULL,
     is_selectable boolean DEFAULT false NOT NULL
 );
@@ -356,18 +356,18 @@ ALTER SEQUENCE code_code_id_seq OWNED BY code.id;
 --
 
 CREATE TABLE collection (
-    id character varying(36) NOT NULL,
-    course_id character varying(36) NOT NULL,
-    unit_id character varying(36) NOT NULL,
-    lesson_id character varying(36) NOT NULL,
+    id uuid NOT NULL,
+    course_id uuid NOT NULL,
+    unit_id uuid NOT NULL,
+    lesson_id uuid NOT NULL,
     title character varying(5000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    owner_id character varying(36) NOT NULL,
-    creator_id character varying(36) NOT NULL,
-    modifier_id character varying(36) NOT NULL,
-    original_creator_id character varying(36),
-    original_collection_id character varying(36),
+    owner_id uuid NOT NULL,
+    creator_id uuid NOT NULL,
+    modifier_id uuid NOT NULL,
+    original_creator_id uuid,
+    original_collection_id uuid,
     publish_date timestamp without time zone,
     format content_container_type NOT NULL,
     thumbnail character varying(2000),
@@ -393,14 +393,14 @@ ALTER TABLE collection OWNER TO nucleus;
 --
 
 CREATE TABLE content (
-    id character varying(36) NOT NULL,
+    id uuid NOT NULL,
     title character varying(20000) NOT NULL,
     url character varying(2000),
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    creator_id character varying(36) NOT NULL,
-    original_creator_id character varying(36) NOT NULL,
-    original_content_id character varying(36),
+    creator_id uuid NOT NULL,
+    original_creator_id uuid NOT NULL,
+    original_content_id uuid,
     publish_date timestamp without time zone,
     short_title character varying(5000),
     narration character varying(5000),
@@ -413,10 +413,10 @@ CREATE TABLE content (
     depth_of_knowledge jsonb,
     hint_explanation_detail jsonb,
     thumbnail character varying(2000),
-    course_id character varying(36),
-    unit_id character varying(36),
-    lesson_id character varying(36),
-    collection_id character varying(36),
+    course_id uuid,
+    unit_id uuid,
+    lesson_id uuid,
+    collection_id uuid,
     sequence_id smallint,
     is_copyright_owner boolean,
     copyright_owner jsonb,
@@ -472,15 +472,15 @@ ALTER SEQUENCE country_country_id_seq OWNED BY country.id;
 --
 
 CREATE TABLE course (
-    id character varying(36) NOT NULL,
+    id uuid NOT NULL,
     title character varying(5000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    owner_id character varying(36) NOT NULL,
-    creator_id character varying(36) NOT NULL,
-    modifier_id character varying(36) NOT NULL,
-    original_creator_id character varying(36) NOT NULL,
-    original_course_id character varying(36),
+    owner_id uuid NOT NULL,
+    creator_id uuid NOT NULL,
+    modifier_id uuid NOT NULL,
+    original_creator_id uuid NOT NULL,
+    original_course_id uuid,
     publish_date timestamp without time zone,
     thumbnail character varying(2000),
     audience jsonb,
@@ -500,16 +500,16 @@ ALTER TABLE course OWNER TO nucleus;
 --
 
 CREATE TABLE course_unit (
-    course_id character varying(36) NOT NULL,
-    unit_id character varying(36) NOT NULL,
+    course_id uuid NOT NULL,
+    unit_id uuid NOT NULL,
     title character varying(5000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    owner_id character varying(36) NOT NULL,
-    creator_id character varying(36) NOT NULL,
-    modifier_id character varying(36) NOT NULL,
-    original_creator_id character varying(36) NOT NULL,
-    original_unit_id character varying(36),
+    owner_id uuid NOT NULL,
+    creator_id uuid NOT NULL,
+    modifier_id uuid NOT NULL,
+    original_creator_id uuid NOT NULL,
+    original_unit_id uuid,
     big_ideas character varying(20000) NOT NULL,
     essential_questions character varying(20000) NOT NULL,
     metadata jsonb,
@@ -526,17 +526,17 @@ ALTER TABLE course_unit OWNER TO nucleus;
 --
 
 CREATE TABLE course_unit_lesson (
-    course_id character varying(36) NOT NULL,
-    unit_id character varying(36) NOT NULL,
-    lesson_id character varying(36) NOT NULL,
+    course_id uuid NOT NULL,
+    unit_id uuid NOT NULL,
+    lesson_id uuid NOT NULL,
     title character varying(5000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    owner_id character varying(36) NOT NULL,
-    creator_id character varying(36) NOT NULL,
-    modifier_id character varying(36) NOT NULL,
-    original_creator_id character varying(36) NOT NULL,
-    original_lesson_id character varying(36),
+    owner_id uuid NOT NULL,
+    creator_id uuid NOT NULL,
+    modifier_id uuid NOT NULL,
+    original_creator_id uuid NOT NULL,
+    original_lesson_id uuid,
     metadata jsonb,
     taxonomy jsonb,
     sequence_id smallint NOT NULL,
@@ -736,7 +736,7 @@ CREATE TABLE default_subject (
     sequence_id smallint NOT NULL,
     subject_classification subject_classification_type NOT NULL,
     has_taxonomy_representation boolean DEFAULT false NOT NULL,
-    default_standard_framework_code character varying(36),
+    default_standard_framework_code uuid,
     is_default_preference boolean DEFAULT false NOT NULL
 );
 
@@ -854,7 +854,7 @@ ALTER TABLE school_district OWNER TO nucleus;
 --
 
 CREATE TABLE standard_framework (
-    id character varying(36) NOT NULL,
+    id uuid NOT NULL,
     display_code character varying(2000) NOT NULL
 );
 
@@ -893,7 +893,7 @@ CREATE TABLE taxonomy_code (
     root_taxonomy_code_id bigint,
     sequence_id smallint NOT NULL,
     default_code_id bigint NOT NULL,
-    standard_framework_code character varying(36) NOT NULL,
+    standard_framework_code uuid NOT NULL,
     format code_type NOT NULL,
     is_selectable boolean DEFAULT false NOT NULL
 );
@@ -937,7 +937,7 @@ CREATE TABLE taxonomy_course (
     grades character varying(2000),
     sequence_id smallint NOT NULL,
     default_course_id bigint NOT NULL,
-    standard_framework_code character varying(36) NOT NULL
+    standard_framework_code uuid NOT NULL
 );
 
 
@@ -977,7 +977,7 @@ CREATE TABLE taxonomy_domain (
     description character varying(5000),
     sequence_id smallint NOT NULL,
     default_domain_id bigint NOT NULL,
-    standard_framework_code character varying(36) NOT NULL
+    standard_framework_code uuid NOT NULL
 );
 
 
@@ -1054,7 +1054,7 @@ CREATE TABLE taxonomy_subdomain (
     description character varying(5000),
     sequence_id smallint NOT NULL,
     default_subdomain_id bigint NOT NULL,
-    standard_framework_code character varying(36) NOT NULL
+    standard_framework_code uuid NOT NULL
 );
 
 
@@ -1107,7 +1107,7 @@ CREATE TABLE taxonomy_subject (
     sequence_id smallint NOT NULL,
     subject_classification subject_classification_type NOT NULL,
     default_subject_id bigint NOT NULL,
-    standard_framework_code character varying(36) NOT NULL
+    standard_framework_code uuid NOT NULL
 );
 
 
