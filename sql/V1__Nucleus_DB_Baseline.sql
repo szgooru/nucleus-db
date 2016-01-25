@@ -270,7 +270,7 @@ ALTER TABLE auth_client OWNER TO nucleus;
 --
 
 CREATE TABLE class (
-    id uuid NOT NULL,
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     creator_id uuid NOT NULL,
@@ -356,10 +356,10 @@ ALTER SEQUENCE code_code_id_seq OWNED BY code.id;
 --
 
 CREATE TABLE collection (
-    id uuid NOT NULL,
-    course_id uuid NOT NULL,
-    unit_id uuid NOT NULL,
-    lesson_id uuid NOT NULL,
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    course_id uuid,
+    unit_id uuid,
+    lesson_id uuid,
     title character varying(5000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
@@ -393,13 +393,14 @@ ALTER TABLE collection OWNER TO nucleus;
 --
 
 CREATE TABLE content (
-    id uuid NOT NULL,
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
     title character varying(20000) NOT NULL,
     url character varying(2000),
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     creator_id uuid NOT NULL,
-    original_creator_id uuid NOT NULL,
+    modifier_id uuid NOT NULL,
+    original_creator_id uuid,
     original_content_id uuid,
     publish_date timestamp without time zone,
     short_title character varying(5000),
@@ -472,14 +473,14 @@ ALTER SEQUENCE country_country_id_seq OWNED BY country.id;
 --
 
 CREATE TABLE course (
-    id uuid NOT NULL,
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
     title character varying(5000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     owner_id uuid NOT NULL,
     creator_id uuid NOT NULL,
     modifier_id uuid NOT NULL,
-    original_creator_id uuid NOT NULL,
+    original_creator_id uuid,
     original_course_id uuid,
     publish_date timestamp without time zone,
     thumbnail character varying(2000),
@@ -501,14 +502,14 @@ ALTER TABLE course OWNER TO nucleus;
 
 CREATE TABLE course_unit (
     course_id uuid NOT NULL,
-    unit_id uuid NOT NULL,
+    unit_id uuid NOT NULL DEFAULT gen_random_uuid(),
     title character varying(5000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     owner_id uuid NOT NULL,
     creator_id uuid NOT NULL,
     modifier_id uuid NOT NULL,
-    original_creator_id uuid NOT NULL,
+    original_creator_id uuid,
     original_unit_id uuid,
     big_ideas character varying(20000) NOT NULL,
     essential_questions character varying(20000) NOT NULL,
@@ -528,14 +529,14 @@ ALTER TABLE course_unit OWNER TO nucleus;
 CREATE TABLE course_unit_lesson (
     course_id uuid NOT NULL,
     unit_id uuid NOT NULL,
-    lesson_id uuid NOT NULL,
+    lesson_id uuid NOT NULL DEFAULT gen_random_uuid(),
     title character varying(5000) NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
     owner_id uuid NOT NULL,
     creator_id uuid NOT NULL,
     modifier_id uuid NOT NULL,
-    original_creator_id uuid NOT NULL,
+    original_creator_id uuid,
     original_lesson_id uuid,
     metadata jsonb,
     taxonomy jsonb,
