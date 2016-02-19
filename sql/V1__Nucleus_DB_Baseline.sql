@@ -1236,8 +1236,7 @@ CREATE TABLE user_network (
     user_id uuid NOT NULL,
     follow_on_user_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL,
-    is_deleted boolean DEFAULT false NOT NULL
+    updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()) NOT NULL
 );
 
 
